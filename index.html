@@ -3,91 +3,496 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ШІ-студія — сайт у розробці</title>
-  <meta name="description" content="Курс для дітей 14–18 років. Сайт у розробці.">
+  <title>ШІ-студія — гурток про ChatGPT, Codex і Gemini</title>
+  <meta name="description" content="Гурток для підлітків 14–18 років: 25 занять у 4 модулях про ChatGPT, Codex і Gemini. Власний ШІ-агент, мем-генератор, Discord-бот класу й сайт на GitHub Pages.">
+  <script>
+    // Тема: вибір користувача, інакше — тема пристрою. Ставимо до малювання сторінки, щоб не мерехтіло.
+    (function () {
+      var t = null;
+      try { t = localStorage.getItem('theme'); } catch (e) {}
+      if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
   <style>
+    /* Токени дизайн-системи «ШІ-студія». Шрифти поки системні: рішення Google Fonts чи власний сервер ще відкрите. */
     :root {
-      color-scheme: light dark;
-      --bg: #0F0E17;
-      --surface: #ffffff;
-      --text: #16161d;
-      --text-muted: #4a4a58;
-      --accent: #5b3df5;
-      --border: #e2e2ea;
+      color-scheme: light;
+      --bg: #FAFAFC; --surface-card: #FFFFFF; --surface-muted: #F1F0F6;
+      --text: #16141F; --text-muted: #5A5670; --text-on-accent: #FFFFFF; --text-on-action: #16141F;
+      --accent: #6D4AFF; --accent-hover: #5B37F0; --accent-soft: #EEEAFF;
+      --action: #C6F432; --action-hover: #B2E21E; --action-pressed: #9FCC12;
+      --border: #E3E1EC; --border-control: #847F9C; --border-action: #16141F; --focus: #6D4AFF;
+      --shadow-action: 0 4px 0 #16141F; --shadow-action-hover: 0 6px 0 #16141F;
+
+      --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px; --space-5: 24px;
+      --space-6: 32px; --space-7: 48px; --space-8: 64px; --space-9: 96px;
+      --content-max: 1200px; --text-max: 720px; --tap-min: 48px;
+      --radius-sm: 8px; --radius-md: 12px; --radius-lg: 20px; --radius-pill: 999px;
+      --font-display: "Unbounded", "Arial Black", system-ui, sans-serif;
+      --font-body: "Onest", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      --font-mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+    }
+    :root[data-theme="dark"] {
+      color-scheme: dark;
+      --bg: #0F0E17; --surface-card: #1A1826; --surface-muted: #24213A;
+      --text: #F3F2F8; --text-muted: #A8A4BD; --text-on-accent: #0F0E17; --text-on-action: #16141F;
+      --accent: #9376FF; --accent-hover: #A48EFF; --accent-soft: #241E47;
+      --action: #C6F432; --action-hover: #D6FA66; --action-pressed: #B3E02A;
+      --border: #2C2940; --border-control: #797494; --border-action: #C6F432; --focus: #B9A8FF;
+      --shadow-action: 0 4px 0 #9376FF; --shadow-action-hover: 0 6px 0 #9376FF;
     }
     @media (prefers-color-scheme: dark) {
-      :root {
-        --bg: #0F0E17;
-        --surface: #1b1b24;
-        --text: #f2f2f7;
-        --text-muted: #b4b4c2;
-        --accent: #a594ff;
-        --border: #2e2e3a;
+      :root:not([data-theme="light"]) {
+        color-scheme: dark;
+        --bg: #0F0E17; --surface-card: #1A1826; --surface-muted: #24213A;
+        --text: #F3F2F8; --text-muted: #A8A4BD; --text-on-accent: #0F0E17; --text-on-action: #16141F;
+        --accent: #9376FF; --accent-hover: #A48EFF; --accent-soft: #241E47;
+        --action: #C6F432; --action-hover: #D6FA66; --action-pressed: #B3E02A;
+        --border: #2C2940; --border-control: #797494; --border-action: #C6F432; --focus: #B9A8FF;
+        --shadow-action: 0 4px 0 #9376FF; --shadow-action-hover: 0 6px 0 #9376FF;
       }
     }
+
     * { box-sizing: border-box; }
-    html, body { height: 100%; margin: 0; }
+    html { scroll-behavior: smooth; }
     body {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
+      margin: 0;
       background: var(--bg);
       color: var(--text);
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-      line-height: 1.5;
+      font-family: var(--font-body);
+      font-size: 18px;
+      line-height: 28px;
+      -webkit-font-smoothing: antialiased;
     }
-    main {
-      width: 100%;
-      max-width: 640px;
-      padding: clamp(24px, 6vw, 48px);
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      text-align: center;
+    a { color: var(--accent); }
+    a:hover { color: var(--accent-hover); }
+    :focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+    p { margin: 0; }
+
+    .wrap { max-width: var(--content-max); margin: 0 auto; padding: 0 var(--space-8); box-sizing: content-box; }
+    .sec { padding-top: var(--space-9); }
+    .stack { display: flex; flex-direction: column; }
+    .muted { color: var(--text-muted); }
+
+    .display, .h2, .h3 { font-family: var(--font-display); margin: 0; overflow-wrap: break-word; hyphens: auto; }
+    .display { font-size: 64px; line-height: 68px; font-weight: 700; letter-spacing: -0.02em; }
+    .h2 { font-size: 36px; line-height: 44px; font-weight: 600; letter-spacing: -0.01em; }
+    .h3 { font-size: 24px; line-height: 32px; font-weight: 600; }
+    .lead { font-size: 22px; line-height: 32px; max-width: var(--text-max); }
+    .caption { font-size: 14px; line-height: 20px; font-weight: 500; letter-spacing: 0.01em; }
+    .label { font-size: 16px; line-height: 24px; font-weight: 600; }
+    .mark { background: var(--action); color: var(--text-on-action); padding: 0 var(--space-2); border-radius: var(--radius-sm); -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+
+    .skip { position: absolute; left: var(--space-4); top: -200px; z-index: 50; padding: var(--space-3) var(--space-5); border-radius: var(--radius-md); background: var(--text); color: var(--bg); font-weight: 600; text-decoration: none; }
+    .skip:focus { top: var(--space-4); color: var(--bg); }
+
+    /* Кнопки */
+    .cta, .btn2 {
+      display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2);
+      min-height: var(--tap-min); padding: var(--space-3) var(--space-5); border-radius: var(--radius-md);
+      font: 600 16px/24px var(--font-body); text-decoration: none; cursor: pointer; text-align: center;
+      transition: transform 120ms ease-out, box-shadow 120ms ease-out, background 120ms ease-out;
     }
-    h1 {
-      margin: 0 0 12px;
-      font-size: clamp(1.5rem, 5vw, 2.25rem);
-      line-height: 1.2;
-      overflow-wrap: break-word;
-      hyphens: auto;
+    .cta { background: var(--action); color: var(--text-on-action); border: 2px solid var(--border-action); box-shadow: var(--shadow-action); }
+    .cta:hover { background: var(--action-hover); color: var(--text-on-action); transform: translateY(-2px); box-shadow: var(--shadow-action-hover); }
+    .cta:active { background: var(--action-pressed); transform: translateY(4px); box-shadow: none; }
+    .cta-lg { min-height: 56px; padding: var(--space-4) var(--space-6); font-size: 18px; }
+    .btn2 { background: transparent; color: var(--accent); border: 2px solid var(--accent); }
+    .btn2:hover { background: var(--accent-soft); color: var(--accent-hover); border-color: var(--accent-hover); }
+    .icon { width: 20px; height: 20px; flex: none; }
+    .icon-lg { width: 24px; height: 24px; flex: none; }
+
+    /* Шапка */
+    header { border-bottom: 1px solid var(--border); }
+    .bar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-4) var(--space-6); padding-top: var(--space-4); padding-bottom: var(--space-4); }
+    .brand { display: inline-flex; align-items: center; gap: var(--space-3); min-height: var(--tap-min); color: var(--text); text-decoration: none; font-family: var(--font-display); font-weight: 700; font-size: 20px; }
+    .brand:hover { color: var(--text); }
+    .brand-mark { width: 40px; height: 40px; border-radius: var(--radius-md); background: var(--accent); display: flex; align-items: center; justify-content: center; color: var(--text-on-accent); }
+    nav.top { display: flex; gap: var(--space-5); flex: 1 1 auto; justify-content: center; }
+    .navlink { color: var(--text); text-decoration: none; font-weight: 600; font-size: 16px; line-height: 24px; padding: var(--space-3) var(--space-1); }
+    .navlink:hover { color: var(--accent-hover); }
+    .seg { display: inline-flex; padding: var(--space-1); gap: var(--space-1); border: 1px solid var(--border-control); border-radius: var(--radius-pill); background: var(--surface-muted); margin-left: auto; }
+    .seg button { min-width: var(--tap-min); min-height: var(--tap-min); padding: var(--space-2) var(--space-4); border: 0; border-radius: var(--radius-pill); background: transparent; color: var(--text-muted); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
+    .seg button:hover { color: var(--text); background: var(--surface-card); }
+    .seg button[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+    .seg button:focus-visible { outline-offset: 2px; }
+
+    /* Чіпи й мітки */
+    .chips { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+    .badge, .chip, .tag { display: inline-flex; align-items: center; min-height: 28px; padding: 2px var(--space-3); font-size: 14px; line-height: 20px; font-weight: 600; }
+    .badge { border-radius: var(--radius-pill); background: var(--action); color: var(--text-on-action); }
+    .chip { border-radius: var(--radius-pill); border: 1px solid var(--border); background: var(--surface-card); font-weight: 500; }
+    .tag { border-radius: var(--radius-sm); background: var(--accent-soft); color: var(--accent-hover); }
+
+    /* Перший екран */
+    .hero { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); gap: var(--space-8); align-items: center; }
+    .hero-text { gap: var(--space-6); align-items: flex-start; }
+    .actions { display: flex; flex-wrap: wrap; gap: var(--space-4); }
+    .demo { background: var(--accent); border-radius: var(--radius-lg); padding: var(--space-6); display: flex; flex-direction: column; gap: var(--space-4); justify-content: center; min-height: 420px; }
+    .prompt { background: var(--surface-card); border: 2px solid var(--text); border-radius: var(--radius-lg); padding: var(--space-5); display: flex; flex-direction: column; gap: var(--space-3); }
+    .prompt.strong { box-shadow: var(--shadow-action-hover); }
+    .prompt-head { display: flex; justify-content: space-between; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
+    .mono { font-family: var(--font-mono); font-size: 16px; line-height: 26px; background: var(--surface-muted); border-radius: var(--radius-sm); padding: var(--space-3) var(--space-4); }
+    .demo-arrow { display: flex; justify-content: center; color: var(--action); }
+
+    /* Сітки й картки */
+    .grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-8); align-items: start; }
+    .grid4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-5); }
+    .card { background: var(--surface-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: var(--space-5); }
+    .card-row { display: flex; gap: var(--space-4); align-items: flex-start; }
+    .ico { width: var(--tap-min); height: var(--tap-min); border-radius: var(--radius-md); background: var(--accent-soft); color: var(--accent-hover); display: flex; align-items: center; justify-content: center; flex: none; }
+    .tools { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-3); }
+    .tools li { display: flex; gap: var(--space-3); align-items: baseline; flex-wrap: wrap; }
+
+    /* Паспорт агента */
+    .passport { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-3); }
+    .pstep { display: grid; gap: var(--space-2); align-content: start; padding: var(--space-4); border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface-card); }
+    .pmeta { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; font-size: 14px; line-height: 20px; font-weight: 600; color: var(--text-muted); }
+    .ver { display: inline-flex; align-items: center; min-height: 24px; padding: 0 var(--space-2); border-radius: var(--radius-pill); background: var(--accent-soft); color: var(--accent-hover); font-family: var(--font-mono); font-size: 14px; font-weight: 500; }
+
+    /* Програма */
+    .modules { display: flex; flex-direction: column; gap: var(--space-3); }
+    details.module { background: var(--surface-card); border: 1px solid var(--border); border-radius: var(--radius-lg); }
+    details.module > summary { list-style: none; display: flex; align-items: center; gap: var(--space-4); min-height: var(--tap-min); padding: var(--space-5); cursor: pointer; border-radius: var(--radius-lg); }
+    details.module > summary::-webkit-details-marker { display: none; }
+    details.module > summary:hover .mod-title { color: var(--accent); }
+    .mod-num { width: var(--tap-min); height: var(--tap-min); flex: none; border-radius: var(--radius-pill); background: var(--accent-soft); color: var(--accent-hover); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 700; }
+    .mod-head { display: flex; flex-direction: column; gap: 2px; flex: 1 1 auto; min-width: 0; }
+    .mod-title { font-family: var(--font-display); font-weight: 600; font-size: 20px; line-height: 28px; overflow-wrap: break-word; }
+    .chev { color: var(--text-muted); transition: transform 120ms ease-out; }
+    details[open] .chev { transform: rotate(180deg); }
+    .mod-result { padding: 0 var(--space-5) var(--space-4); }
+    .lessons { list-style: none; margin: 0; padding: 0 var(--space-5) var(--space-5); display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); }
+    .lessons li { display: flex; gap: var(--space-4); align-items: flex-start; padding: var(--space-4); border-radius: var(--radius-md); background: var(--surface-muted); }
+    .l-num { font-family: var(--font-mono); font-size: 16px; font-weight: 500; color: var(--accent-hover); flex: none; min-width: 28px; }
+    .l-body { display: flex; flex-direction: column; gap: var(--space-2); min-width: 0; }
+    .l-title { font-weight: 500; }
+
+    /* Організатор і заявка */
+    .panel { background: var(--surface-muted); border-radius: var(--radius-lg); padding: var(--space-7); }
+    .checks { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-3); }
+    .checks li { display: flex; gap: var(--space-3); align-items: flex-start; }
+    .checks svg { color: var(--accent); margin-top: 2px; }
+    .apply-card { padding: var(--space-6); gap: var(--space-5); }
+
+    footer { margin-top: var(--space-9); background: var(--surface-muted); border-top: 1px solid var(--border); }
+    .foot { padding-top: var(--space-7); padding-bottom: var(--space-7); display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--space-6); }
+
+    @media (max-width: 1023px) {
+      .wrap { padding: 0 var(--space-6); }
+      .display { font-size: 36px; line-height: 40px; letter-spacing: -0.015em; }
+      .h2 { font-size: 24px; line-height: 30px; letter-spacing: 0; }
+      .h3 { font-size: 20px; line-height: 28px; }
+      .hero { grid-template-columns: minmax(0, 1fr); gap: var(--space-7); }
+      .grid4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      nav.top, .hide-m { display: none; }
     }
-    .lessons {
-      margin: 0 0 8px;
-      font-size: 1.125rem;
-      font-weight: 600;
+    @media (max-width: 767px) {
+      .wrap { padding: 0 var(--space-4); }
+      body { font-size: 16px; line-height: 26px; }
+      .lead { font-size: 16px; line-height: 26px; }
+      .sec { padding-top: var(--space-7); }
+      .grid2, .grid4, .lessons { grid-template-columns: minmax(0, 1fr); gap: var(--space-5); }
+      .card { padding: var(--space-4); }
+      .demo { padding: var(--space-4); min-height: 0; }
+      .panel { padding: var(--space-5); }
+      .actions > a { width: 100%; }
+      details.module > summary { padding: var(--space-4); }
     }
-    .subtitle {
-      margin: 0 0 24px;
-      font-size: 1.125rem;
-      color: var(--text-muted);
-    }
-    .description {
-      margin: 0 auto 32px;
-      max-width: 52ch;
-      text-align: left;
-    }
-    .status {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      margin: 0;
-      padding: 10px 20px;
-      border: 2px solid var(--accent);
-      border-radius: 999px;
-      color: var(--accent);
-      font-weight: 600;
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .cta, .btn2, .chev { transition: none; }
+      .cta:hover, .cta:active { transform: none; }
     }
   </style>
 </head>
 <body>
-  <main>
-    <h1>ШІ-студія</h1>
-    <p class="lessons">24 уроки в чотирьох модулях</p>
-    <p class="subtitle">Курс для дітей 14–18 років</p>
-    <p class="description">Практичний курс про ChatGPT, Codex і Gemini. Після курсу учень уміє складати сильні промпти, користуватися агентами та застосовувати ШІ для навчання й повсякденних задач, роблячи це безпечно й етично. Заняття веде наставник, а сайт дає структуру, приклади, відео, практику й самоперевірку — з комп’ютера й телефона.</p>
-    <p class="status"><span aria-hidden="true">🛠</span> Сайт у розробці</p>
+  <a class="skip" href="#top">Перейти до змісту</a>
+
+  <header>
+    <div class="wrap bar">
+      <a class="brand" href="#top">
+        <span class="brand-mark" aria-hidden="true">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 8 4 4-4 4"/><path d="M12 17h7"/></svg>
+        </span>
+        ШІ-студія
+      </a>
+      <nav class="top" aria-label="Розділи сторінки">
+        <a class="navlink" href="#about">Про курс</a>
+        <a class="navlink" href="#program">Програма</a>
+        <a class="navlink" href="#museum">Організатор</a>
+        <a class="navlink" href="#apply">Заявка</a>
+      </nav>
+      <div class="seg" role="group" aria-label="Тема">
+        <button type="button" data-set-theme="light" aria-pressed="false" aria-label="Світла тема" title="Світла тема">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+        </button>
+        <button type="button" data-set-theme="dark" aria-pressed="false" aria-label="Темна тема" title="Темна тема">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="top" tabindex="-1">
+
+    <section class="wrap sec">
+      <div class="hero">
+        <div class="stack hero-text">
+          <div class="chips">
+            <span class="badge">14–18 років</span>
+            <span class="chip">25 занять</span>
+            <span class="chip">4 модулі</span>
+          </div>
+          <h1 class="display">Збери свою <span class="mark">ШІ-студію</span></h1>
+          <p class="lead muted">25 занять гуртка: меми й лор класу, дані без фейків, власний мем-генератор, Discord-бот класу і сайт на GitHub Pages. А паралельно — твій власний ШІ-агент.</p>
+          <div class="actions">
+            <a class="cta cta-lg" href="#apply">Записатися на курс
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+            <a class="btn2" href="#about" style="min-height: 56px">Про курс</a>
+          </div>
+        </div>
+
+        <figure class="demo" style="margin: 0" aria-label="Фрагмент заняття: слабкий промпт для ChatGPT перетворюється на сильний — з роллю, ціллю, контекстом, форматом і обмеженнями">
+          <div class="prompt">
+            <div class="prompt-head"><span class="caption muted">Слабкий промпт</span><span class="tag">ChatGPT</span></div>
+            <div class="mono muted">Зроби смішний підпис про НМТ</div>
+          </div>
+          <div class="demo-arrow" aria-hidden="true">
+            <svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+          </div>
+          <div class="prompt strong">
+            <div class="prompt-head"><span class="caption">Сильний промпт</span><span class="tag">ChatGPT</span></div>
+            <div class="mono">Ти — сценарист мемів 10-Б. Зроби 3 підписи до шаблону «перед НМТ / після НМТ»: тиждень до пробного тесту, до 8 слів, без образ і прізвищ.</div>
+          </div>
+        </figure>
+      </div>
+    </section>
+
+    <section id="about" class="wrap sec">
+      <div class="grid2">
+        <div class="stack" style="gap: var(--space-5)">
+          <h2 class="h2">Про курс</h2>
+          <p>Курс для тих, хто вже пробував ChatGPT, але користується ним поверхово. Без пояснень, що таке чат-бот, — одразу практика на шкільних темах: НМТ, Євробачення, турніри класу, меми року.</p>
+          <p class="muted">Кожне заняття додає частину до спільної «ШІ-студії» класу, а ти паралельно створюєш власного ШІ-агента — від першої інструкції до Discord-бота, який відповідає сам. Усі сервіси дозволені з 13 років; для ChatGPT до 18 років потрібна письмова згода батьків.</p>
+          <div class="stack" style="gap: var(--space-3); padding-top: var(--space-2)">
+            <h3 class="label" style="margin: 0">Інструменти курсу</h3>
+            <ul class="tools">
+              <li><span class="tag">ChatGPT</span><span class="muted">основний помічник: тексти, проєкти, Canvas, аналіз даних</span></li>
+              <li><span class="tag">Codex</span><span class="muted">агент для коду: Discord-бот і сайт студії</span></li>
+              <li><span class="tag">Gemini</span><span class="muted">друга модель для перехресної перевірки</span></li>
+              <li><span class="tag">Google Таблиці й Форми</span><span class="muted">дані, турнірні таблиці, анонімні опитування</span></li>
+              <li><span class="tag">GitHub</span><span class="muted">сховище коду й публікація сайту на GitHub Pages</span></li>
+              <li><span class="tag">Discord</span><span class="muted">закритий сервер класу і бот класу</span></li>
+            </ul>
+          </div>
+        </div>
+        <div class="stack" style="gap: var(--space-4)">
+          <div class="card card-row">
+            <div class="ico"><svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+            <div class="stack" style="gap: var(--space-1)"><h3 class="h3">Наставник і група</h3><p class="muted">Заняття наживо в групі: наставник веде тему, відповідає на питання й перевіряє практику.</p></div>
+          </div>
+          <div class="card card-row">
+            <div class="ico"><svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14.7 6.3 3 3"/><path d="M3 21l3.5-1 11-11-2.5-2.5-11 11z"/><path d="M16 4l4 4"/></svg></div>
+            <div class="stack" style="gap: var(--space-1)"><h3 class="h3">Практика щоразу</h3><p class="muted">Кожне заняття — практичне завдання, яке додає частину до студії класу: нічого не робиться «в стіл».</p></div>
+          </div>
+          <div class="card card-row">
+            <div class="ico"><svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M2 20h20"/></svg></div>
+            <div class="stack" style="gap: var(--space-1)"><h3 class="h3">Без балів і рейтингів</h3><p class="muted">Немає очок, рівнів і таблиць лідерів. Мотивація — агент і студія, які ростуть на очах, і доброзичливий відгук.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="outcomes" class="wrap sec">
+      <div class="stack" style="gap: var(--space-6)">
+        <h2 class="h2">Чого навчишся</h2>
+        <div class="grid4">
+          <div class="card stack" style="gap: var(--space-4)">
+            <div class="ico"><svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 9h8M8 13h5"/></svg></div>
+            <h3 class="h3">Сильні запити</h3><p class="muted">Роль, ціль, контекст, формат, обмеження — і запити, що дають смішний і точний результат.</p>
+          </div>
+          <div class="card stack" style="gap: var(--space-4)">
+            <div class="ico"><svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="8" width="18" height="12" rx="2"/><path d="M12 8V4"/><circle cx="12" cy="3" r="1"/><path d="M9 13v2M15 13v2"/></svg></div>
+            <h3 class="h3">Чесні дані</h3><p class="muted">Очищаєш таблиці, будуєш графіки й ловиш фейкові висновки та маніпулятивні графіки.</p>
+          </div>
+          <div class="card stack" style="gap: var(--space-4)">
+            <div class="ico"><svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 2 9 2 12 0v-5"/></svg></div>
+            <h3 class="h3">Дизайн і доступність</h3><p class="muted">Дизайн-система студії, шрифти з ґ, є, ї, контраст і альт-текст — і власний мем-генератор.</p>
+          </div>
+          <div class="card stack" style="gap: var(--space-4)">
+            <div class="ico"><svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg></div>
+            <h3 class="h3">Код з агентом і безпека</h3><p class="muted">Codex, Git і GitHub, Discord-бот класу. Токен — це пароль, а особисті дані в чат не потрапляють.</p>
+          </div>
+        </div>
+
+        <div class="stack" style="gap: var(--space-4); padding-top: var(--space-4)">
+          <h3 class="h3">Твій ШІ-агент росте разом із курсом</h3>
+          <p class="muted" style="max-width: var(--text-max)">Усе про агента збирається в паспорті — від версії 0.1 до 1.0, коли агент уперше відповідає сам у Discord-боті класу.</p>
+          <ol class="passport" aria-label="Паспорт агента">
+            <li class="pstep"><span class="pmeta"><span class="ver">0.1–0.4</span>Модуль 1</span><span class="label">Характер, інструкції, приклади діалогів</span><span class="caption muted">Проєкт у ChatGPT</span></li>
+            <li class="pstep"><span class="pmeta"><span class="ver">0.5</span>Модуль 2</span><span class="label">Файли знань і тест із правильними відповідями</span><span class="caption muted">Проєкт у ChatGPT + Google Таблиці</span></li>
+            <li class="pstep"><span class="pmeta"><span class="ver">0.6</span>Модуль 3</span><span class="label">Аватар, стиль, сторінка-чат, мем-генератор як уміння</span><span class="caption muted">Прототип у Canvas</span></li>
+            <li class="pstep"><span class="pmeta"><span class="ver">1.0</span>Модуль 4</span><span class="label">Власний «мозок», команди, захист, журнал розмов</span><span class="caption muted">Discord-бот класу</span></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section id="program" class="wrap sec">
+      <div class="stack" style="gap: var(--space-6)">
+        <div class="stack" style="gap: var(--space-3); max-width: var(--text-max)">
+          <h2 class="h2">Програма: 4 модулі, 25 занять</h2>
+          <p class="muted">Від запитів і мемів через дані й дизайн до Discord-бота класу, сайту студії і власного ШІ-агента.</p>
+        </div>
+
+        <div class="modules">
+          <details class="module" open>
+            <summary>
+              <span class="mod-num" aria-hidden="true">1</span>
+              <span class="mod-head"><span class="caption muted">Модуль 1 · 4 заняття</span><span class="mod-title">Мемолог: тексти, меми й лор класу</span></span>
+              <svg class="icon-lg chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+            </summary>
+            <p class="mod-result muted">Результат: лор класу, персонаж майбутнього бота і перший мем-дайджест.</p>
+            <ol class="lessons">
+              <li><span class="l-num">01</span><span class="l-body"><span class="l-title">Чому ШІ не розуміє мемів (і як це виправити)</span><span class="chips"><span class="tag">ChatGPT</span><span class="tag">Gemini</span></span></span></li>
+              <li><span class="l-num">02</span><span class="l-body"><span class="l-title">Лор класу: проєкт і персонаж бота</span><span class="chips"><span class="tag">ChatGPT</span></span></span></li>
+              <li><span class="l-num">03</span><span class="l-body"><span class="l-title">Сценарій короткого відео в Canvas</span><span class="chips"><span class="tag">ChatGPT</span></span></span></li>
+              <li><span class="l-num">04</span><span class="l-body"><span class="l-title">Агент і мем-дайджест тижня</span><span class="chips"><span class="tag">ChatGPT</span><span class="tag">Gemini</span></span></span></li>
+            </ol>
+          </details>
+
+          <details class="module">
+            <summary>
+              <span class="mod-num" aria-hidden="true">2</span>
+              <span class="mod-head"><span class="caption muted">Модуль 2 · 4 заняття</span><span class="mod-title">Цифри за хайпом</span></span>
+              <svg class="icon-lg chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+            </summary>
+            <p class="mod-result muted">Результат: дані для вікторин і турнірної таблиці бота. Усі дані — відкриті або анонімні.</p>
+            <ol class="lessons">
+              <li><span class="l-num">01</span><span class="l-body"><span class="l-title">Євробачення в цифрах</span><span class="chips"><span class="tag">ChatGPT</span></span></span></li>
+              <li><span class="l-num">02</span><span class="l-body"><span class="l-title">Турнірна таблиця в Google Таблицях</span><span class="chips"><span class="tag">Google Таблиці</span><span class="tag">ChatGPT</span><span class="tag">Gemini</span></span></span></li>
+              <li><span class="l-num">03</span><span class="l-body"><span class="l-title">Чарт класу: регулярний звіт</span><span class="chips"><span class="tag">Google Форми</span><span class="tag">ChatGPT</span></span></span></li>
+              <li><span class="l-num">04</span><span class="l-body"><span class="l-title">Ловець фейкових висновків + підсумковий кейс</span><span class="chips"><span class="tag">ChatGPT</span><span class="tag">Gemini</span></span></span></li>
+            </ol>
+          </details>
+
+          <details class="module">
+            <summary>
+              <span class="mod-num" aria-hidden="true">3</span>
+              <span class="mod-head"><span class="caption muted">Модуль 3 · 4 заняття</span><span class="mod-title">Мем-фабрика</span></span>
+              <svg class="icon-lg chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+            </summary>
+            <p class="mod-result muted">Результат: власний мем-генератор у браузері — завантажуєш картинку, пишеш текст, скачуєш мем.</p>
+            <ol class="lessons">
+              <li><span class="l-num">01</span><span class="l-body"><span class="l-title">Технічне завдання на мем-генератор</span><span class="chips"><span class="tag">ChatGPT</span></span></span></li>
+              <li><span class="l-num">02</span><span class="l-body"><span class="l-title">Дизайн-система студії</span><span class="chips"><span class="tag">ChatGPT</span><span class="tag">Gemini</span></span></span></li>
+              <li><span class="l-num">03</span><span class="l-body"><span class="l-title">Шрифти, кирилиця і доступність мемів</span><span class="chips"><span class="tag">Google Fonts</span><span class="tag">WebAIM</span></span></span></li>
+              <li><span class="l-num">04</span><span class="l-body"><span class="l-title">Збираємо мем-генератор + підсумковий тест</span><span class="chips"><span class="tag">ChatGPT</span><span class="tag">Gemini</span></span></span></li>
+            </ol>
+          </details>
+
+          <details class="module">
+            <summary>
+              <span class="mod-num" aria-hidden="true">4</span>
+              <span class="mod-head"><span class="caption muted">Модуль 4 · 13 занять</span><span class="mod-title">Ботовод: Discord-бот класу і сайт з Codex</span></span>
+              <svg class="icon-lg chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+            </summary>
+            <p class="mod-result muted">Результат: бот із персонажем класу, вікторинами й мемами та сайт студії на GitHub Pages.</p>
+            <ol class="lessons">
+              <li><span class="l-num">01</span><span class="l-body"><span class="l-title">Знайомство з Codex: агент оживляє мем-генератор</span><span class="chips"><span class="tag">Codex</span></span></span></li>
+              <li><span class="l-num">02</span><span class="l-body"><span class="l-title">Безпека: токен бота — це пароль</span><span class="chips"><span class="tag">Codex</span></span></span></li>
+              <li><span class="l-num">03</span><span class="l-body"><span class="l-title">AGENTS.md: характер бота для агента</span><span class="chips"><span class="tag">Codex</span></span></span></li>
+              <li><span class="l-num">04</span><span class="l-body"><span class="l-title">Git, термінал і GitHub</span><span class="chips"><span class="tag">GitHub</span></span></span></li>
+              <li><span class="l-num">05</span><span class="l-body"><span class="l-title">Перший Discord-бот: команда /привіт</span><span class="chips"><span class="tag">Codex</span><span class="tag">Discord</span></span></span></li>
+              <li><span class="l-num">06</span><span class="l-body"><span class="l-title">Команди /мем і /вікторина</span><span class="chips"><span class="tag">Codex</span><span class="tag">Discord</span></span></span></li>
+              <li><span class="l-num">07</span><span class="l-body"><span class="l-title">Контент для бота і сайту</span><span class="chips"><span class="tag">ChatGPT</span><span class="tag">Gemini</span></span></span></li>
+              <li><span class="l-num">08</span><span class="l-body"><span class="l-title">Публікація: сайт студії на GitHub Pages</span><span class="chips"><span class="tag">GitHub</span></span></span></li>
+              <li><span class="l-num">09</span><span class="l-body"><span class="l-title">Навички для Codex і перехресна рецензія</span><span class="chips"><span class="tag">Codex</span><span class="tag">Gemini</span></span></span></li>
+              <li><span class="l-num">+</span><span class="l-body"><span class="l-title">Додаткове: мозок агента — локальна модель і команда /агент</span><span class="chips"><span class="tag">Codex</span><span class="tag">Discord</span></span></span></li>
+              <li><span class="l-num">10–11</span><span class="l-body"><span class="l-title">Хакатон «ШІ-студія» і демо-день</span><span class="chips"><span class="tag">Codex</span><span class="tag">Discord</span><span class="tag">GitHub</span></span></span></li>
+              <li><span class="l-num">12</span><span class="l-body"><span class="l-title">Цифрова безпека: сками, фейки й соцмережі</span><span class="chips"><span class="tag">Discord</span></span></span></li>
+            </ol>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <section id="museum" class="wrap sec">
+      <div class="panel grid2" style="gap: var(--space-7)">
+        <div class="stack" style="gap: var(--space-4)">
+          <span class="caption muted">Організатор курсу</span>
+          <h2 class="h2">Software and Computer Museum</h2>
+        </div>
+        <div class="stack" style="gap: var(--space-4)">
+          <p>Курс проводить гурток при музеї.</p>
+          <a href="https://sncmuseum.org" style="display: inline-flex; align-items: center; gap: var(--space-2); min-height: var(--tap-min); font-weight: 600; color: var(--accent-hover)">Сайт музею (sncmuseum.org)
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section id="apply" class="wrap sec">
+      <div class="grid2">
+        <div class="stack" style="gap: var(--space-5)">
+          <h2 class="h2">Записатися на курс</h2>
+          <p>Залиш заявку — наставник зв’яжеться, щоб розповісти про розклад і найближчу групу.</p>
+          <ul class="checks">
+            <li><svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span class="muted">Для учнів 14–18 років, які вже пробували ChatGPT</span></li>
+            <li><svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span class="muted">Для ChatGPT до 18 років потрібна письмова згода батьків — шаблон дамо</span></li>
+            <li><svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span class="muted">Акаунт на сайті створює наставник, реєструватися не треба</span></li>
+          </ul>
+        </div>
+        <div class="card stack apply-card">
+          <h3 class="h3">Як подати заявку</h3>
+          <p class="muted">Поки форма заявки готується, напиши нам листом: ім’я або псевдонім, вік, контакт когось із батьків і мову занять — українська чи англійська.</p>
+          <!-- TODO: замінити course@example.org на справжню адресу курсу (відкрите питання «Пошта для заявок»). -->
+          <a class="cta cta-lg" href="mailto:course@example.org?subject=%D0%97%D0%B0%D1%8F%D0%B2%D0%BA%D0%B0%20%D0%BD%D0%B0%20%D0%BA%D1%83%D1%80%D1%81%20%C2%AB%D0%A8%D0%86-%D1%81%D1%82%D1%83%D0%B4%D1%96%D1%8F%C2%BB">Записатися на курс
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+      </div>
+    </section>
+
   </main>
+
+  <footer>
+    <div class="wrap foot">
+      <div class="stack" style="gap: var(--space-3); max-width: 420px">
+        <span style="font-family: var(--font-display); font-weight: 700; font-size: 20px">ШІ-студія</span>
+        <p class="muted" style="font-size: 16px; line-height: 26px">Гурток про ChatGPT, Codex і Gemini для підлітків 14–18 років.</p>
+      </div>
+      <p class="caption muted" style="align-self: flex-end">Організатор — Software and Computer Museum</p>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      var root = document.documentElement;
+      var buttons = document.querySelectorAll('[data-set-theme]');
+      var media = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+      function current() {
+        var t = root.getAttribute('data-theme');
+        if (t) return t;
+        return media && media.matches ? 'dark' : 'light';
+      }
+      function sync() {
+        var t = current();
+        buttons.forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-set-theme') === t)); });
+      }
+      buttons.forEach(function (b) {
+        b.addEventListener('click', function () {
+          var t = b.getAttribute('data-set-theme');
+          root.setAttribute('data-theme', t);
+          try { localStorage.setItem('theme', t); } catch (e) {}
+          sync();
+        });
+      });
+      if (media && media.addEventListener) media.addEventListener('change', sync);
+      sync();
+    })();
+  </script>
 </body>
 </html>
