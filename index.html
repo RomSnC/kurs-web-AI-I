@@ -127,6 +127,7 @@
     /* Перший екран */
     .hero { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); gap: var(--space-8); align-items: center; }
     .hero-text { gap: var(--space-6); align-items: flex-start; }
+    .lessons-count { margin-top: calc(var(--space-4) * -1); font-size: 20px; line-height: 28px; font-weight: 600; }
     .actions { display: flex; flex-wrap: wrap; gap: var(--space-4); }
     .demo { background: var(--accent); border-radius: var(--radius-lg); padding: var(--space-6); display: flex; flex-direction: column; gap: var(--space-4); justify-content: center; min-height: 420px; }
     .prompt { background: var(--surface-card); border: 2px solid var(--text); border-radius: var(--radius-lg); padding: var(--space-5); display: flex; flex-direction: column; gap: var(--space-3); }
@@ -241,10 +242,9 @@
         <div class="stack hero-text">
           <div class="chips">
             <span class="badge">14–18 років</span>
-            <span class="chip">25 занять</span>
-            <span class="chip">4 модулі</span>
           </div>
           <h1 class="display">Збери свою <span class="mark">ШІ-студію</span></h1>
+          <p class="lessons-count">24 уроки в чотирьох модулях</p>
           <p class="lead muted">25 занять гуртка: меми й лор класу, дані без фейків, власний мем-генератор, Discord-бот класу і сайт на GitHub Pages. А паралельно — твій власний ШІ-агент.</p>
           <div class="actions">
             <a class="cta cta-lg" href="#apply">Записатися на курс
