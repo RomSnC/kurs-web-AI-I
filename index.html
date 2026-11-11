@@ -188,6 +188,9 @@
       .grid4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       nav.top, .hide-m { display: none; }
     }
+    @media (max-width: 599px) {
+      .bar > .cta { width: 100%; }
+    }
     @media (max-width: 767px) {
       .wrap { padding: 0 var(--space-4); }
       body { font-size: 16px; line-height: 26px; }
@@ -232,6 +235,7 @@
           <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z"/></svg>
         </button>
       </div>
+      <a class="cta" href="#apply">Залишити заявку</a>
     </div>
   </header>
 
