@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>2026 рік: GPT-6, Gemini 4 і як читати гучні цифри — ШІ-студія</title>
+  <meta name="description" content="Чотири роки тому ChatGPT здавався дивом. У 2026 році OpenAI і Google випускають нові моделі майже щомісяця, а їхні асистенти мають понад мільярд користувачів. Але є дві несподівані новини. Перша: найсильніші моделі тепер спершу дають лише фахівцям з кібербезпеки. Друга: гучні цифри про «мільярд користувачів» треба читати дуже уважно.">
+  <script>
+    // Тема: вибір користувача, інакше — тема пристрою. Ставимо до малювання сторінки, щоб не мерехтіло.
+    (function () {
+      var t = null;
+      try { t = localStorage.getItem('theme'); } catch (e) {}
+      if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+  <style>
+    /* Токени дизайн-системи «ШІ-студія». Шрифти поки системні: рішення Google Fonts чи власний сервер ще відкрите. */
+    :root {
+      color-scheme: light;
+      --bg: #FAFAFC; --surface-card: #FFFFFF; --surface-muted: #F1F0F6;
+      --text: #16141F; --text-muted: #5A5670; --text-on-accent: #FFFFFF; --text-on-action: #16141F;
+      --accent: #6D4AFF; --accent-hover: #5B37F0; --accent-soft: #EEEAFF;
+      --action: #C6F432; --action-hover: #B2E21E; --action-pressed: #9FCC12;
+      --border: #E3E1EC; --border-control: #847F9C; --border-action: #16141F; --focus: #6D4AFF;
+      --shadow-action: 0 4px 0 #16141F; --shadow-action-hover: 0 6px 0 #16141F;
+
+      --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px; --space-5: 24px;
+      --space-6: 32px; --space-7: 48px; --space-8: 64px; --space-9: 96px;
+      --content-max: 1200px; --text-max: 720px; --tap-min: 48px;
+      --radius-sm: 8px; --radius-md: 12px; --radius-lg: 20px; --radius-pill: 999px;
+      --font-display: "Unbounded", "Arial Black", system-ui, sans-serif;
+      --font-body: "Onest", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      --font-mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+    }
+    :root[data-theme="dark"] {
+      color-scheme: dark;
+      --bg: #0F0E17; --surface-card: #1A1826; --surface-muted: #24213A;
+      --text: #F3F2F8; --text-muted: #A8A4BD; --text-on-accent: #0F0E17; --text-on-action: #16141F;
+      --accent: #9376FF; --accent-hover: #A48EFF; --accent-soft: #241E47;
+      --action: #C6F432; --action-hover: #D6FA66; --action-pressed: #B3E02A;
+      --border: #2C2940; --border-control: #797494; --border-action: #C6F432; --focus: #B9A8FF;
+      --shadow-action: 0 4px 0 #9376FF; --shadow-action-hover: 0 6px 0 #9376FF;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        color-scheme: dark;
+        --bg: #0F0E17; --surface-card: #1A1826; --surface-muted: #24213A;
+        --text: #F3F2F8; --text-muted: #A8A4BD; --text-on-accent: #0F0E17; --text-on-action: #16141F;
+        --accent: #9376FF; --accent-hover: #A48EFF; --accent-soft: #241E47;
+        --action: #C6F432; --action-hover: #D6FA66; --action-pressed: #B3E02A;
+        --border: #2C2940; --border-control: #797494; --border-action: #C6F432; --focus: #B9A8FF;
+        --shadow-action: 0 4px 0 #9376FF; --shadow-action-hover: 0 6px 0 #9376FF;
+      }
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 18px;
+      line-height: 28px;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--accent); }
+    a:hover { color: var(--accent-hover); }
+    :focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+    p { margin: 0; }
+
+    .wrap { max-width: var(--content-max); margin: 0 auto; padding: 0 var(--space-8); box-sizing: content-box; }
+    .sec { padding-top: var(--space-9); }
+    .stack { display: flex; flex-direction: column; }
+    .muted { color: var(--text-muted); }
+
+    .display, .h2, .h3 { font-family: var(--font-display); margin: 0; overflow-wrap: break-word; hyphens: auto; }
+    .display { font-size: 64px; line-height: 68px; font-weight: 700; letter-spacing: -0.02em; }
+    .h2 { font-size: 36px; line-height: 44px; font-weight: 600; letter-spacing: -0.01em; }
+    .h3 { font-size: 24px; line-height: 32px; font-weight: 600; }
+    .lead { font-size: 22px; line-height: 32px; max-width: var(--text-max); }
+    .caption { font-size: 14px; line-height: 20px; font-weight: 500; letter-spacing: 0.01em; }
+    .label { font-size: 16px; line-height: 24px; font-weight: 600; }
+    .mark { background: var(--action); color: var(--text-on-action); padding: 0 var(--space-2); border-radius: var(--radius-sm); -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+
+    .skip { position: absolute; left: var(--space-4); top: -200px; z-index: 50; padding: var(--space-3) var(--space-5); border-radius: var(--radius-md); background: var(--text); color: var(--bg); font-weight: 600; text-decoration: none; }
+    .skip:focus { top: var(--space-4); color: var(--bg); }
+
+    /* Кнопки */
+    .cta, .btn2 {
+      display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2);
+      min-height: var(--tap-min); padding: var(--space-3) var(--space-5); border-radius: var(--radius-md);
+      font: 600 16px/24px var(--font-body); text-decoration: none; cursor: pointer; text-align: center;
+      transition: transform 120ms ease-out, box-shadow 120ms ease-out, background 120ms ease-out;
+    }
+    .cta { background: var(--action); color: var(--text-on-action); border: 2px solid var(--border-action); box-shadow: var(--shadow-action); }
+    .cta:hover { background: var(--action-hover); color: var(--text-on-action); transform: translateY(-2px); box-shadow: var(--shadow-action-hover); }
+    .cta:active { background: var(--action-pressed); transform: translateY(4px); box-shadow: none; }
+    .cta-lg { min-height: 56px; padding: var(--space-4) var(--space-6); font-size: 18px; }
+    .btn2 { background: transparent; color: var(--accent); border: 2px solid var(--accent); }
+    .btn2:hover { background: var(--accent-soft); color: var(--accent-hover); border-color: var(--accent-hover); }
+    .icon { width: 20px; height: 20px; flex: none; }
+    .icon-lg { width: 24px; height: 24px; flex: none; }
+
+    /* Шапка */
+    header { border-bottom: 1px solid var(--border); }
+    .bar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-4) var(--space-6); padding-top: var(--space-4); padding-bottom: var(--space-4); }
+    .brand { display: inline-flex; align-items: center; gap: var(--space-3); min-height: var(--tap-min); color: var(--text); text-decoration: none; font-family: var(--font-display); font-weight: 700; font-size: 20px; }
+    .brand:hover { color: var(--text); }
+    .brand-mark { width: 40px; height: 40px; border-radius: var(--radius-md); background: var(--accent); display: flex; align-items: center; justify-content: center; color: var(--text-on-accent); }
+    nav.top { display: flex; gap: var(--space-5); flex: 1 1 auto; justify-content: center; }
+    .navlink { color: var(--text); text-decoration: none; font-weight: 600; font-size: 16px; line-height: 24px; padding: var(--space-3) var(--space-1); }
+    .navlink:hover { color: var(--accent-hover); }
+    .seg { display: inline-flex; padding: var(--space-1); gap: var(--space-1); border: 1px solid var(--border-control); border-radius: var(--radius-pill); background: var(--surface-muted); margin-left: auto; }
+    .seg button { min-width: var(--tap-min); min-height: var(--tap-min); padding: var(--space-2) var(--space-4); border: 0; border-radius: var(--radius-pill); background: transparent; color: var(--text-muted); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
+    .seg button:hover { color: var(--text); background: var(--surface-card); }
+    .seg button[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+    .seg button:focus-visible { outline-offset: 2px; }
+
+    /* Чіпи й мітки */
+    .chips { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+    .badge, .chip, .tag { display: inline-flex; align-items: center; min-height: 28px; padding: 2px var(--space-3); font-size: 14px; line-height: 20px; font-weight: 600; }
+    .badge { border-radius: var(--radius-pill); background: var(--action); color: var(--text-on-action); }
+    .chip { border-radius: var(--radius-pill); border: 1px solid var(--border); background: var(--surface-card); font-weight: 500; }
+    .tag { border-radius: var(--radius-sm); background: var(--accent-soft); color: var(--accent-hover); }
+
+    /* Перший екран */
+    .hero { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); gap: var(--space-8); align-items: center; }
+    .hero-text { gap: var(--space-6); align-items: flex-start; }
+    .lessons-count { margin-top: calc(var(--space-4) * -1); font-size: 20px; line-height: 28px; font-weight: 600; }
+    .actions { display: flex; flex-wrap: wrap; gap: var(--space-4); }
+    .demo { background: var(--accent); border-radius: var(--radius-lg); padding: var(--space-6); display: flex; flex-direction: column; gap: var(--space-4); justify-content: center; min-height: 420px; }
+    .prompt { background: var(--surface-card); border: 2px solid var(--text); border-radius: var(--radius-lg); padding: var(--space-5); display: flex; flex-direction: column; gap: var(--space-3); }
+    .prompt.strong { box-shadow: var(--shadow-action-hover); }
+    .prompt-head { display: flex; justify-content: space-between; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
+    .mono { font-family: var(--font-mono); font-size: 16px; line-height: 26px; background: var(--surface-muted); border-radius: var(--radius-sm); padding: var(--space-3) var(--space-4); }
+    .demo-arrow { display: flex; justify-content: center; color: var(--action); }
+
+    /* Сітки й картки */
+    .grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-8); align-items: start; }
+    .grid4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-5); }
+    .card { background: var(--surface-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: var(--space-5); }
+    .card-row { display: flex; gap: var(--space-4); align-items: flex-start; }
+    .ico { width: var(--tap-min); height: var(--tap-min); border-radius: var(--radius-md); background: var(--accent-soft); color: var(--accent-hover); display: flex; align-items: center; justify-content: center; flex: none; }
+    .tools { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-3); }
+    .tools li { display: flex; gap: var(--space-3); align-items: baseline; flex-wrap: wrap; }
+
+    /* Паспорт агента */
+    .passport { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-3); }
+    .pstep { display: grid; gap: var(--space-2); align-content: start; padding: var(--space-4); border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface-card); }
+    .pmeta { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; font-size: 14px; line-height: 20px; font-weight: 600; color: var(--text-muted); }
+    .ver { display: inline-flex; align-items: center; min-height: 24px; padding: 0 var(--space-2); border-radius: var(--radius-pill); background: var(--accent-soft); color: var(--accent-hover); font-family: var(--font-mono); font-size: 14px; font-weight: 500; }
+
+    /* Програма */
+    .modules { display: flex; flex-direction: column; gap: var(--space-3); }
+    details.module { background: var(--surface-card); border: 1px solid var(--border); border-radius: var(--radius-lg); }
+    details.module > summary { list-style: none; display: flex; align-items: center; gap: var(--space-4); min-height: var(--tap-min); padding: var(--space-5); cursor: pointer; border-radius: var(--radius-lg); }
+    details.module > summary::-webkit-details-marker { display: none; }
+    details.module > summary:hover .mod-title { color: var(--accent); }
+    .mod-num { width: var(--tap-min); height: var(--tap-min); flex: none; border-radius: var(--radius-pill); background: var(--accent-soft); color: var(--accent-hover); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 700; }
+    .mod-head { display: flex; flex-direction: column; gap: 2px; flex: 1 1 auto; min-width: 0; }
+    .mod-title { font-family: var(--font-display); font-weight: 600; font-size: 20px; line-height: 28px; overflow-wrap: break-word; }
+    .chev { color: var(--text-muted); transition: transform 120ms ease-out; }
+    details[open] .chev { transform: rotate(180deg); }
+    .mod-result { padding: 0 var(--space-5) var(--space-4); }
+    .lessons { list-style: none; margin: 0; padding: 0 var(--space-5) var(--space-5); display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); }
+    .lessons li { display: flex; gap: var(--space-4); align-items: flex-start; padding: var(--space-4); border-radius: var(--radius-md); background: var(--surface-muted); }
+    .l-num { font-family: var(--font-mono); font-size: 16px; font-weight: 500; color: var(--accent-hover); flex: none; min-width: 28px; }
+    .l-body { display: flex; flex-direction: column; gap: var(--space-2); min-width: 0; }
+    .l-title { font-weight: 500; }
+
+    /* Організатор і заявка */
+    .panel { background: var(--surface-muted); border-radius: var(--radius-lg); padding: var(--space-7); }
+    .checks { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-3); }
+    .checks li { display: flex; gap: var(--space-3); align-items: flex-start; }
+    .checks svg { color: var(--accent); margin-top: 2px; }
+    .apply-card { padding: var(--space-6); gap: var(--space-5); }
+
+    footer { margin-top: var(--space-9); background: var(--surface-muted); border-top: 1px solid var(--border); }
+    .foot { padding-top: var(--space-7); padding-bottom: var(--space-7); display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--space-6); }
+    .foot-nav { display: flex; flex-direction: column; align-items: flex-start; }
+    .foot-nav a { display: inline-flex; align-items: center; min-height: 40px; color: var(--text); font-weight: 600; font-size: 16px; line-height: 24px; text-decoration: none; }
+    .foot-nav a:hover { color: var(--accent-hover); text-decoration: underline; }
+
+    @media (max-width: 1023px) {
+      .wrap { padding: 0 var(--space-6); }
+      .display { font-size: 36px; line-height: 40px; letter-spacing: -0.015em; }
+      .h2 { font-size: 24px; line-height: 30px; letter-spacing: 0; }
+      .h3 { font-size: 20px; line-height: 28px; }
+      .hero { grid-template-columns: minmax(0, 1fr); gap: var(--space-7); }
+      .grid4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      nav.top, .hide-m { display: none; }
+    }
+    @media (max-width: 599px) {
+      .bar > .cta { width: 100%; }
+    }
+    @media (max-width: 767px) {
+      .wrap { padding: 0 var(--space-4); }
+      body { font-size: 16px; line-height: 26px; }
+      .lead { font-size: 16px; line-height: 26px; }
+      .sec { padding-top: var(--space-7); }
+      .grid2, .grid4, .lessons { grid-template-columns: minmax(0, 1fr); gap: var(--space-5); }
+      .card { padding: var(--space-4); }
+      .demo { padding: var(--space-4); min-height: 0; }
+      .panel { padding: var(--space-5); }
+      .actions > a { width: 100%; }
+      details.module > summary { padding: var(--space-4); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .cta, .btn2, .chev { transition: none; }
+      .cta:hover, .cta:active { transform: none; }
+    }
+
+    /* Статті */
+    .crumbs { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; font-size: 16px; line-height: 24px; color: var(--text-muted); }
+    .crumbs a { font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; min-height: var(--tap-min); }
+    .crumbs a:hover { text-decoration: underline; }
+    .page-head { gap: var(--space-5); max-width: 880px; }
+    .title { font-family: var(--font-display); font-size: 48px; line-height: 56px; font-weight: 700; letter-spacing: -0.02em; margin: 0; overflow-wrap: break-word; hyphens: auto; }
+    .prose { max-width: var(--text-max); }
+    .prose > * + * { margin-top: var(--space-5); }
+    .prose h2 { font-family: var(--font-display); font-size: 28px; line-height: 36px; font-weight: 600; letter-spacing: -0.01em; margin: var(--space-7) 0 0; overflow-wrap: break-word; hyphens: auto; }
+    .prose h2 + * { margin-top: var(--space-4); }
+    .prose ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: var(--space-3); }
+    .prose ul li { position: relative; padding-left: var(--space-6); }
+    .prose ul li::before { content: ""; position: absolute; left: var(--space-2); top: 11px; width: 8px; height: 8px; border-radius: 2px; background: var(--accent); }
+    .prose strong { font-weight: 700; }
+    .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    .navlink[aria-current="page"] { color: var(--accent); box-shadow: inset 0 -3px 0 var(--accent); }
+    .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--surface-card); }
+    .prose table { width: 100%; border-collapse: collapse; font-size: 16px; line-height: 24px; }
+    .prose th, .prose td { text-align: left; vertical-align: top; padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--border); }
+    .prose thead th { background: var(--surface-muted); font-weight: 600; }
+    .prose tbody tr:last-child > * { border-bottom: 0; }
+    .prose tbody th { font-family: var(--font-mono); font-weight: 500; color: var(--accent-hover); white-space: nowrap; }
+    .sources { margin-top: var(--space-8); max-width: var(--text-max); background: var(--surface-muted); border-radius: var(--radius-lg); padding: var(--space-6); display: flex; flex-direction: column; gap: var(--space-4); }
+    .sources ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: var(--space-3); font-size: 16px; line-height: 24px; }
+    .sources a { overflow-wrap: anywhere; }
+    .pager { margin-top: var(--space-8); display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); max-width: 880px; }
+    .pager a, .acard { display: flex; flex-direction: column; gap: var(--space-2); text-decoration: none; color: var(--text); background: var(--surface-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: var(--space-5); transition: border-color 120ms ease-out, transform 120ms ease-out; }
+    .pager a:hover, .acard:hover { color: var(--text); border-color: var(--accent); transform: translateY(-2px); }
+    .pager a:hover .pt, .acard:hover .acard-title { color: var(--accent-hover); }
+    .pager .next { grid-column: 2; text-align: right; align-items: flex-end; }
+    .pt { font-family: var(--font-display); font-weight: 600; font-size: 18px; line-height: 26px; overflow-wrap: break-word; }
+    .alist { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-5); }
+    .alist li:first-child { grid-column: 1 / -1; }
+    .acard { height: 100%; gap: var(--space-4); padding: var(--space-6); }
+    .acard-top { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
+    .acard-title { font-family: var(--font-display); font-size: 24px; line-height: 32px; font-weight: 600; margin: 0; overflow-wrap: break-word; hyphens: auto; }
+    .acard-more { margin-top: auto; display: inline-flex; align-items: center; gap: var(--space-2); font-weight: 600; color: var(--accent-hover); }
+    @media (max-width: 1023px) {
+      .title { font-size: 32px; line-height: 40px; letter-spacing: -0.015em; }
+      .prose h2 { font-size: 22px; line-height: 30px; }
+    }
+    @media (max-width: 767px) {
+      .prose h2 { margin-top: var(--space-6); }
+      .sources { padding: var(--space-5); margin-top: var(--space-7); }
+      .pager, .alist { grid-template-columns: minmax(0, 1fr); }
+      .pager .next { grid-column: auto; }
+      .acard { padding: var(--space-5); }
+      .acard-title { font-size: 20px; line-height: 28px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .pager a, .acard { transition: none; }
+      .pager a:hover, .acard:hover { transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#top">Перейти до змісту</a>
+
+  <header>
+    <div class="wrap bar">
+      <a class="brand" href="index.html">
+        <span class="brand-mark" aria-hidden="true">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 8 4 4-4 4"/><path d="M12 17h7"/></svg>
+        </span>
+        ШІ-студія
+      </a>
+      <nav class="top" aria-label="Розділи сайту">
+        <a class="navlink" href="index.html#about">Про курс</a>
+        <a class="navlink" href="index.html#program">Програма</a>
+        <a class="navlink" href="articles.html" aria-current="page">Статті</a>
+        <a class="navlink" href="index.html#museum">Організатор</a>
+        <a class="navlink" href="index.html#apply">Заявка</a>
+      </nav>
+      <div class="seg" role="group" aria-label="Тема">
+        <button type="button" data-set-theme="light" aria-pressed="false" aria-label="Світла тема" title="Світла тема">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+        </button>
+        <button type="button" data-set-theme="dark" aria-pressed="false" aria-label="Темна тема" title="Темна тема">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z"/></svg>
+        </button>
+      </div>
+      <a class="cta" href="index.html#apply">Залишити заявку</a>
+    </div>
+  </header>
+
+  <main id="top" tabindex="-1">
+    <article class="wrap sec">
+      <div class="stack page-head">
+        <nav class="crumbs" aria-label="Навігація">
+          <a href="articles.html"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>&nbsp;Усі статті</a>
+        </nav>
+        <div class="chips">
+          <span class="badge">Стаття 5 з 5</span>
+          <span class="chip">5 хв читання</span>
+          <span class="chip">Рівень: складний</span>
+        </div>
+        <h1 class="title">2026 рік: GPT-6, Gemini 4 і як читати гучні цифри</h1>
+        <p class="lead muted">Чотири роки тому ChatGPT здавався дивом. У 2026 році <strong>OpenAI</strong> і <strong>Google</strong> випускають нові моделі майже щомісяця, а їхні асистенти мають понад мільярд користувачів. Але є дві несподівані новини. Перша: найсильніші моделі тепер спершу дають лише фахівцям з кібербезпеки. Друга: гучні цифри про «мільярд користувачів» треба читати дуже уважно.</p>
+      </div>
+
+      <div class="prose" style="margin-top: var(--space-7)">
+        <h2>Як змінилися моделі</h2>
+        <div class="table-wrap"><table>
+        <thead><tr><th scope="col"><span class='sr'>Рік</span></th><th scope="col">OpenAI</th><th scope="col">Google</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">2025</th><td>GPT-5 (7 серпня 2025)</td><td>Gemini 3 (18 листопада 2025)</td></tr>
+          <tr><th scope="row">2026</th><td>GPT-5.5 (23 квітня 2026), GPT-6 (вересень 2026)</td><td>Gemini 4 Argon (30 вересня 2026), Gemini 4 Carbon (28 жовтня 2026)</td></tr>
+        </tbody>
+        </table></div>
+        <p><strong>GPT-5</strong> OpenAI зробила моделлю за замовчуванням навіть для безкоштовних користувачів. Головна ідея — система сама вирішує, коли досить швидкої відповіді, а коли треба «подумати» довше. <strong>Gemini 3</strong> Google назвала своєю найрозумнішою моделлю на той момент і вбудувала її в пошук.</p>
+        <p>У 2026 році обидві компанії перейшли до нових поколінь. OpenAI випустила GPT-5.5, а потім GPT-6 у кількох варіантах. Google представила Gemini 4 у двох версіях: Argon і Carbon, яку компанія назвала своєю найсильнішою моделлю. Назви дедалі більше схожі на хімічні елементи чи сузір'я, а різниця між версіями часто помітна лише у складних завданнях. Для звичайного користувача важливіше інше: що модель уміє робити самостійно.</p>
+        <p>Нові покоління вміють виконувати довгі завдання з багатьох кроків: шукати інформацію, писати код, перевіряти себе. Такі системи називають <strong>агентами</strong>. З агентом на прикладі Codex ви вже познайомилися в попередній статті.</p>
+        <p>Приклад: замість «розкажи про музеї Львова» агенту можна сказати «склади план екскурсії на один день із розкладом і бюджетом». Він сам знайде потрібні дані, порівняє варіанти й запропонує готовий результат. Але чим більше рішень ухвалює агент самостійно, тим важливіше, щоб людина перевіряла, що саме він зробив.</p>
+        <h2>Коли модель надто сильна</h2>
+        <p>Що краще AI програмує, то краще він знаходить вразливості, тобто «дірки» в програмах. Це корисно захисникам, які латають ці дірки. Але це ж уміння можуть використати й зловмисники.</p>
+        <ul>
+          <li><strong>3–4 вересня 2026 року</strong> OpenAI почала випускати <strong>GPT-6 Astra</strong>. Спершу її отримали лише учасники програми з кібербезпеки, і тільки потім — платні користувачі. Це перша модель OpenAI, ризики якої в кібербезпеці компанія оцінила найвищим рівнем, «Critical» (критичний).</li>
+          <li><strong>30 вересня 2026 року</strong> Google анонсувала <strong>Gemini 4 Argon</strong> і так само спершу відкрила її для кіберзахисників. Розробники й платні передплатники отримали модель 13 жовтня.</li>
+          <li><strong>5 листопада 2026 року</strong> OpenAI випустила <strong>GPT-6 Cyber</strong> і водночас скасувала випуск моделі GPT-6.1 Astra, бо та гірше трималася встановлених правил.</li>
+        </ul>
+        <p>Це новий етап: компанії вже не просто запускають «найкращу модель», а вирішують, кому і коли її безпечно дати.</p>
+        <p>Такий підхід має і прихильників, і критиків. Прихильники кажуть, що захисники мають отримати нову зброю раніше за нападників. Критики питають, хто і за якими правилами вирішує, кому довіряти, і чи не стане це способом для великих компаній контролювати доступ до технологій.</p>
+        <h2>Мільярд проти мільярда: чому цифри не порівнюються</h2>
+        <p>Тепер про цифри, які часто з'являються в заголовках.</p>
+        <ul>
+          <li><strong>ChatGPT:</strong> 29 вересня 2026 року OpenAI повідомила про 1,2 млрд користувачів <strong>на тиждень</strong>.</li>
+          <li><strong>Gemini:</strong> 11 серпня 2026 року застосунок Gemini перейшов позначку в 1 млрд користувачів <strong>на місяць</strong>.</li>
+        </ul>
+        <p>Здається, що ChatGPT трохи попереду. Але порівнювати ці числа напряму не можна. Уявіть шкільну бібліотеку. Якщо порахувати всіх, хто зайшов хоча б раз за місяць, вийде більше людей, ніж якщо рахувати тих, хто приходить щотижня. Тижнева метрика суворіша: людина має повертатися регулярно.</p>
+        <p>Є й інші нюанси. Огляд статистики на сайті whizi.io помітив, що в письмовому підсумку конференції OpenAI говорила про «спільні» 1,2 млрд тижневих користувачів, тож незрозуміло, чи враховано лише ChatGPT. А деякі сайти досі повторюють застарілі цифри. Нарешті, і OpenAI, і Google рахують своїх користувачів самі, і незалежно ці дані не перевірені.</p>
+        <p>Для Google мільярд користувачів не новинка: за даними TechCrunch, Gemini став уже 14-м продуктом компанії з такою аудиторією. Але для AI-асистента, якому тоді ще не було й трьох років, це рекордна швидкість.</p>
+        <h2>Як читати новини про AI: коротка пам'ятка</h2>
+        <p>Ця серія показала чимало прикладів, коли цифри й дати в різних джерелах відрізняються. Ось кілька питань, які варто ставити собі щоразу:</p>
+        <ul>
+          <li><strong>Хто порахував?</strong> Сама компанія, незалежні аналітики чи журналісти?</li>
+          <li><strong>Що саме рахували?</strong> Користувачів на тиждень чи на місяць, завантаження чи активні акаунти?</li>
+          <li><strong>Коли?</strong> У світі AI цифра піврічної давності вже застаріла.</li>
+          <li><strong>Чи є першоджерело?</strong> Офіційний блог компанії або наукова стаття надійніші, ніж переказ переказу.</li>
+          <li><strong>Чи підтверджує це хтось іще?</strong> Один сайт — це ще не факт.</li>
+        </ul>
+        <h2>Питання для обговорення</h2>
+        <ul>
+          <li>Чи справедливо, що найсильніші моделі спершу отримують лише окремі фахівці? Хто має це вирішувати?</li>
+          <li>Знайдіть у новинах свіжу цифру про AI. Дайте відповідь на п'ять питань із пам'ятки: що ви з'ясували?</li>
+          <li>Яке завдання ви б довірили AI-агенту, а яке — ні? Чому?</li>
+        </ul>
+        <h2>Чому це важливо</h2>
+        <p>Історія AI-асистентів, від трансформера 2017 року до GPT-6 і Gemini 4, ще далеко не закінчена. Уже наступного місяця з'являться нові моделі й нові рекорди. Назви моделей зміняться, а питання про безпеку, чесні цифри і відповідальність залишаться. Тому найцінніше вміння — не запам'ятати всі назви, а розуміти, як ці системи працюють, де їхні обмеження і як перевіряти, що про них пишуть.</p>
+      </div>
+
+      <section class="sources" aria-labelledby="sources-title">
+        <h2 class="label" id="sources-title" style="margin: 0">Джерела</h2>
+        <ul>
+          <li><a href="https://openai.com/index/introducing-gpt-5/">Introducing GPT-5 — OpenAI</a></li>
+          <li><a href="https://openai.com/index/introducing-gpt-5-5/">Introducing GPT-5.5 — OpenAI</a></li>
+          <li><a href="https://blog.google/products-and-platforms/products/gemini/gemini-3/">Gemini 3 — Google</a></li>
+          <li><a href="https://www.cnbc.com/2026/09/03/open-ai-astra-gpt-6-cyber.html">OpenAI begins rolling out Astra model — CNBC</a></li>
+          <li><a href="https://www.theregister.com/security/2026/11/05/openai-releases-gpt-6-cyber-and-promises-this-one-stays-within-rules-of-engagement/5307855">OpenAI releases GPT-6 Cyber — The Register</a></li>
+          <li><a href="https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-4-argon/">Gemini 4 Argon — Google</a></li>
+          <li><a href="https://blog.google/innovation-and-ai/products/gemini-app/gemini-4-argon-availability/">Gemini 4 Argon is now available in the Gemini app — Google</a></li>
+          <li><a href="https://9to5google.com/2026/10/28/gemini-4-carbon-announcement/">Google announces Gemini 4 Carbon — 9to5Google</a></li>
+          <li><a href="https://techcrunch.com/2026/08/11/googles-gemini-app-surges-to-one-billion-users/">Google's Gemini app surges to 1 billion users — TechCrunch</a></li>
+          <li><a href="https://whizi.io/resources/chatgpt-statistics/">ChatGPT Statistics: 1.2 Billion Weekly Active Users — whizi.io</a></li>
+        </ul>
+      </section>
+
+      <nav class="pager" aria-label="Інші статті серії">
+        <a class="prev" href="article-4-codex.html"><span class="caption muted" style="display:inline-flex;gap:var(--space-2);align-items:center"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Попередня стаття</span><span class="pt">Codex: від підказки одного рядка до AI-програміста</span></a>
+<a class="next" href="articles.html"><span class="caption muted" style="display:inline-flex;gap:var(--space-2);align-items:center">Це остання стаття серії<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span><span class="pt">Усі статті</span></a>
+      </nav>
+    </article>
+  </main>
+
+  <footer>
+    <div class="wrap foot">
+      <div class="stack" style="gap: var(--space-3); max-width: 420px">
+        <span style="font-family: var(--font-display); font-weight: 700; font-size: 20px">ШІ-студія</span>
+        <p class="muted" style="font-size: 16px; line-height: 26px">Гурток про ChatGPT, Codex і Gemini для підлітків 14–18 років.</p>
+      </div>
+      <nav class="foot-nav" aria-label="Розділи сайту (футер)">
+        <a href="index.html#about">Про курс</a>
+        <a href="index.html#program">Програма</a>
+        <a href="articles.html">Статті</a>
+        <a href="index.html#museum">Організатор</a>
+        <a href="index.html#apply">Заявка</a>
+      </nav>
+      <p class="caption muted" style="align-self: flex-end">Організатор — Software and Computer Museum</p>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      var root = document.documentElement;
+      var buttons = document.querySelectorAll('[data-set-theme]');
+      var media = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+      function current() {
+        var t = root.getAttribute('data-theme');
+        if (t) return t;
+        return media && media.matches ? 'dark' : 'light';
+      }
+      function sync() {
+        var t = current();
+        buttons.forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-set-theme') === t)); });
+      }
+      buttons.forEach(function (b) {
+        b.addEventListener('click', function () {
+          var t = b.getAttribute('data-set-theme');
+          root.setAttribute('data-theme', t);
+          try { localStorage.setItem('theme', t); } catch (e) {}
+          sync();
+        });
+      });
+      if (media && media.addEventListener) media.addEventListener('change', sync);
+      sync();
+    })();
+  </script>
+</body>
+</html>

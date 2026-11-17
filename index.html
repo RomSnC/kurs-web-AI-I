@@ -178,6 +178,9 @@
 
     footer { margin-top: var(--space-9); background: var(--surface-muted); border-top: 1px solid var(--border); }
     .foot { padding-top: var(--space-7); padding-bottom: var(--space-7); display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--space-6); }
+    .foot-nav { display: flex; flex-direction: column; align-items: flex-start; }
+    .foot-nav a { display: inline-flex; align-items: center; min-height: 40px; color: var(--text); font-weight: 600; font-size: 16px; line-height: 24px; text-decoration: none; }
+    .foot-nav a:hover { color: var(--accent-hover); text-decoration: underline; }
 
     @media (max-width: 1023px) {
       .wrap { padding: 0 var(--space-6); }
@@ -224,6 +227,7 @@
       <nav class="top" aria-label="Розділи сторінки">
         <a class="navlink" href="#about">Про курс</a>
         <a class="navlink" href="#program">Програма</a>
+        <a class="navlink" href="articles.html">Статті</a>
         <a class="navlink" href="#museum">Організатор</a>
         <a class="navlink" href="#apply">Заявка</a>
       </nav>
@@ -468,6 +472,13 @@
         <span style="font-family: var(--font-display); font-weight: 700; font-size: 20px">ШІ-студія</span>
         <p class="muted" style="font-size: 16px; line-height: 26px">Гурток про ChatGPT, Codex і Gemini для підлітків 14–18 років.</p>
       </div>
+      <nav class="foot-nav" aria-label="Розділи сайту (футер)">
+        <a href="index.html#about">Про курс</a>
+        <a href="index.html#program">Програма</a>
+        <a href="articles.html">Статті</a>
+        <a href="index.html#museum">Організатор</a>
+        <a href="index.html#apply">Заявка</a>
+      </nav>
       <p class="caption muted" style="align-self: flex-end">Організатор — Software and Computer Museum</p>
     </div>
   </footer>

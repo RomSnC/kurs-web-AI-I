@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Codex: від підказки одного рядка до AI-програміста — ШІ-студія</title>
+  <meta name="description" content="Назва Codex у світі AI позначає дві різні системи компанії OpenAI. Перша, 2021 року, вміла дописувати рядки коду, як автодоповнення в телефоні дописує слова. Друга, 2025 року, — агент, який отримує завдання і сам його виконує, ніби помічник, що пише цілий твір. Різниця між ними добре показує, як AI перейшов від «підказок» до справжньої роботи.">
+  <script>
+    // Тема: вибір користувача, інакше — тема пристрою. Ставимо до малювання сторінки, щоб не мерехтіло.
+    (function () {
+      var t = null;
+      try { t = localStorage.getItem('theme'); } catch (e) {}
+      if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+  <style>
+    /* Токени дизайн-системи «ШІ-студія». Шрифти поки системні: рішення Google Fonts чи власний сервер ще відкрите. */
+    :root {
+      color-scheme: light;
+      --bg: #FAFAFC; --surface-card: #FFFFFF; --surface-muted: #F1F0F6;
+      --text: #16141F; --text-muted: #5A5670; --text-on-accent: #FFFFFF; --text-on-action: #16141F;
+      --accent: #6D4AFF; --accent-hover: #5B37F0; --accent-soft: #EEEAFF;
+      --action: #C6F432; --action-hover: #B2E21E; --action-pressed: #9FCC12;
+      --border: #E3E1EC; --border-control: #847F9C; --border-action: #16141F; --focus: #6D4AFF;
+      --shadow-action: 0 4px 0 #16141F; --shadow-action-hover: 0 6px 0 #16141F;
+
+      --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px; --space-5: 24px;
+      --space-6: 32px; --space-7: 48px; --space-8: 64px; --space-9: 96px;
+      --content-max: 1200px; --text-max: 720px; --tap-min: 48px;
+      --radius-sm: 8px; --radius-md: 12px; --radius-lg: 20px; --radius-pill: 999px;
+      --font-display: "Unbounded", "Arial Black", system-ui, sans-serif;
+      --font-body: "Onest", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      --font-mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+    }
+    :root[data-theme="dark"] {
+      color-scheme: dark;
+      --bg: #0F0E17; --surface-card: #1A1826; --surface-muted: #24213A;
+      --text: #F3F2F8; --text-muted: #A8A4BD; --text-on-accent: #0F0E17; --text-on-action: #16141F;
+      --accent: #9376FF; --accent-hover: #A48EFF; --accent-soft: #241E47;
+      --action: #C6F432; --action-hover: #D6FA66; --action-pressed: #B3E02A;
+      --border: #2C2940; --border-control: #797494; --border-action: #C6F432; --focus: #B9A8FF;
+      --shadow-action: 0 4px 0 #9376FF; --shadow-action-hover: 0 6px 0 #9376FF;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        color-scheme: dark;
+        --bg: #0F0E17; --surface-card: #1A1826; --surface-muted: #24213A;
+        --text: #F3F2F8; --text-muted: #A8A4BD; --text-on-accent: #0F0E17; --text-on-action: #16141F;
+        --accent: #9376FF; --accent-hover: #A48EFF; --accent-soft: #241E47;
+        --action: #C6F432; --action-hover: #D6FA66; --action-pressed: #B3E02A;
+        --border: #2C2940; --border-control: #797494; --border-action: #C6F432; --focus: #B9A8FF;
+        --shadow-action: 0 4px 0 #9376FF; --shadow-action-hover: 0 6px 0 #9376FF;
+      }
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 18px;
+      line-height: 28px;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--accent); }
+    a:hover { color: var(--accent-hover); }
+    :focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+    p { margin: 0; }
+
+    .wrap { max-width: var(--content-max); margin: 0 auto; padding: 0 var(--space-8); box-sizing: content-box; }
+    .sec { padding-top: var(--space-9); }
+    .stack { display: flex; flex-direction: column; }
+    .muted { color: var(--text-muted); }
+
+    .display, .h2, .h3 { font-family: var(--font-display); margin: 0; overflow-wrap: break-word; hyphens: auto; }
+    .display { font-size: 64px; line-height: 68px; font-weight: 700; letter-spacing: -0.02em; }
+    .h2 { font-size: 36px; line-height: 44px; font-weight: 600; letter-spacing: -0.01em; }
+    .h3 { font-size: 24px; line-height: 32px; font-weight: 600; }
+    .lead { font-size: 22px; line-height: 32px; max-width: var(--text-max); }
+    .caption { font-size: 14px; line-height: 20px; font-weight: 500; letter-spacing: 0.01em; }
+    .label { font-size: 16px; line-height: 24px; font-weight: 600; }
+    .mark { background: var(--action); color: var(--text-on-action); padding: 0 var(--space-2); border-radius: var(--radius-sm); -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+
+    .skip { position: absolute; left: var(--space-4); top: -200px; z-index: 50; padding: var(--space-3) var(--space-5); border-radius: var(--radius-md); background: var(--text); color: var(--bg); font-weight: 600; text-decoration: none; }
+    .skip:focus { top: var(--space-4); color: var(--bg); }
+
+    /* Кнопки */
+    .cta, .btn2 {
+      display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2);
+      min-height: var(--tap-min); padding: var(--space-3) var(--space-5); border-radius: var(--radius-md);
+      font: 600 16px/24px var(--font-body); text-decoration: none; cursor: pointer; text-align: center;
+      transition: transform 120ms ease-out, box-shadow 120ms ease-out, background 120ms ease-out;
+    }
+    .cta { background: var(--action); color: var(--text-on-action); border: 2px solid var(--border-action); box-shadow: var(--shadow-action); }
+    .cta:hover { background: var(--action-hover); color: var(--text-on-action); transform: translateY(-2px); box-shadow: var(--shadow-action-hover); }
+    .cta:active { background: var(--action-pressed); transform: translateY(4px); box-shadow: none; }
+    .cta-lg { min-height: 56px; padding: var(--space-4) var(--space-6); font-size: 18px; }
+    .btn2 { background: transparent; color: var(--accent); border: 2px solid var(--accent); }
+    .btn2:hover { background: var(--accent-soft); color: var(--accent-hover); border-color: var(--accent-hover); }
+    .icon { width: 20px; height: 20px; flex: none; }
+    .icon-lg { width: 24px; height: 24px; flex: none; }
+
+    /* Шапка */
+    header { border-bottom: 1px solid var(--border); }
+    .bar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-4) var(--space-6); padding-top: var(--space-4); padding-bottom: var(--space-4); }
+    .brand { display: inline-flex; align-items: center; gap: var(--space-3); min-height: var(--tap-min); color: var(--text); text-decoration: none; font-family: var(--font-display); font-weight: 700; font-size: 20px; }
+    .brand:hover { color: var(--text); }
+    .brand-mark { width: 40px; height: 40px; border-radius: var(--radius-md); background: var(--accent); display: flex; align-items: center; justify-content: center; color: var(--text-on-accent); }
+    nav.top { display: flex; gap: var(--space-5); flex: 1 1 auto; justify-content: center; }
+    .navlink { color: var(--text); text-decoration: none; font-weight: 600; font-size: 16px; line-height: 24px; padding: var(--space-3) var(--space-1); }
+    .navlink:hover { color: var(--accent-hover); }
+    .seg { display: inline-flex; padding: var(--space-1); gap: var(--space-1); border: 1px solid var(--border-control); border-radius: var(--radius-pill); background: var(--surface-muted); margin-left: auto; }
+    .seg button { min-width: var(--tap-min); min-height: var(--tap-min); padding: var(--space-2) var(--space-4); border: 0; border-radius: var(--radius-pill); background: transparent; color: var(--text-muted); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
+    .seg button:hover { color: var(--text); background: var(--surface-card); }
+    .seg button[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+    .seg button:focus-visible { outline-offset: 2px; }
+
+    /* Чіпи й мітки */
+    .chips { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+    .badge, .chip, .tag { display: inline-flex; align-items: center; min-height: 28px; padding: 2px var(--space-3); font-size: 14px; line-height: 20px; font-weight: 600; }
+    .badge { border-radius: var(--radius-pill); background: var(--action); color: var(--text-on-action); }
+    .chip { border-radius: var(--radius-pill); border: 1px solid var(--border); background: var(--surface-card); font-weight: 500; }
+    .tag { border-radius: var(--radius-sm); background: var(--accent-soft); color: var(--accent-hover); }
+
+    /* Перший екран */
+    .hero { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); gap: var(--space-8); align-items: center; }
+    .hero-text { gap: var(--space-6); align-items: flex-start; }
+    .lessons-count { margin-top: calc(var(--space-4) * -1); font-size: 20px; line-height: 28px; font-weight: 600; }
+    .actions { display: flex; flex-wrap: wrap; gap: var(--space-4); }
+    .demo { background: var(--accent); border-radius: var(--radius-lg); padding: var(--space-6); display: flex; flex-direction: column; gap: var(--space-4); justify-content: center; min-height: 420px; }
+    .prompt { background: var(--surface-card); border: 2px solid var(--text); border-radius: var(--radius-lg); padding: var(--space-5); display: flex; flex-direction: column; gap: var(--space-3); }
+    .prompt.strong { box-shadow: var(--shadow-action-hover); }
+    .prompt-head { display: flex; justify-content: space-between; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
+    .mono { font-family: var(--font-mono); font-size: 16px; line-height: 26px; background: var(--surface-muted); border-radius: var(--radius-sm); padding: var(--space-3) var(--space-4); }
+    .demo-arrow { display: flex; justify-content: center; color: var(--action); }
+
+    /* Сітки й картки */
+    .grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-8); align-items: start; }
+    .grid4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-5); }
+    .card { background: var(--surface-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: var(--space-5); }
+    .card-row { display: flex; gap: var(--space-4); align-items: flex-start; }
+    .ico { width: var(--tap-min); height: var(--tap-min); border-radius: var(--radius-md); background: var(--accent-soft); color: var(--accent-hover); display: flex; align-items: center; justify-content: center; flex: none; }
+    .tools { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-3); }
+    .tools li { display: flex; gap: var(--space-3); align-items: baseline; flex-wrap: wrap; }
+
+    /* Паспорт агента */
+    .passport { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-3); }
+    .pstep { display: grid; gap: var(--space-2); align-content: start; padding: var(--space-4); border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface-card); }
+    .pmeta { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; font-size: 14px; line-height: 20px; font-weight: 600; color: var(--text-muted); }
+    .ver { display: inline-flex; align-items: center; min-height: 24px; padding: 0 var(--space-2); border-radius: var(--radius-pill); background: var(--accent-soft); color: var(--accent-hover); font-family: var(--font-mono); font-size: 14px; font-weight: 500; }
+
+    /* Програма */
+    .modules { display: flex; flex-direction: column; gap: var(--space-3); }
+    details.module { background: var(--surface-card); border: 1px solid var(--border); border-radius: var(--radius-lg); }
+    details.module > summary { list-style: none; display: flex; align-items: center; gap: var(--space-4); min-height: var(--tap-min); padding: var(--space-5); cursor: pointer; border-radius: var(--radius-lg); }
+    details.module > summary::-webkit-details-marker { display: none; }
+    details.module > summary:hover .mod-title { color: var(--accent); }
+    .mod-num { width: var(--tap-min); height: var(--tap-min); flex: none; border-radius: var(--radius-pill); background: var(--accent-soft); color: var(--accent-hover); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 700; }
+    .mod-head { display: flex; flex-direction: column; gap: 2px; flex: 1 1 auto; min-width: 0; }
+    .mod-title { font-family: var(--font-display); font-weight: 600; font-size: 20px; line-height: 28px; overflow-wrap: break-word; }
+    .chev { color: var(--text-muted); transition: transform 120ms ease-out; }
+    details[open] .chev { transform: rotate(180deg); }
+    .mod-result { padding: 0 var(--space-5) var(--space-4); }
+    .lessons { list-style: none; margin: 0; padding: 0 var(--space-5) var(--space-5); display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); }
+    .lessons li { display: flex; gap: var(--space-4); align-items: flex-start; padding: var(--space-4); border-radius: var(--radius-md); background: var(--surface-muted); }
+    .l-num { font-family: var(--font-mono); font-size: 16px; font-weight: 500; color: var(--accent-hover); flex: none; min-width: 28px; }
+    .l-body { display: flex; flex-direction: column; gap: var(--space-2); min-width: 0; }
+    .l-title { font-weight: 500; }
+
+    /* Організатор і заявка */
+    .panel { background: var(--surface-muted); border-radius: var(--radius-lg); padding: var(--space-7); }
+    .checks { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-3); }
+    .checks li { display: flex; gap: var(--space-3); align-items: flex-start; }
+    .checks svg { color: var(--accent); margin-top: 2px; }
+    .apply-card { padding: var(--space-6); gap: var(--space-5); }
+
+    footer { margin-top: var(--space-9); background: var(--surface-muted); border-top: 1px solid var(--border); }
+    .foot { padding-top: var(--space-7); padding-bottom: var(--space-7); display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--space-6); }
+    .foot-nav { display: flex; flex-direction: column; align-items: flex-start; }
+    .foot-nav a { display: inline-flex; align-items: center; min-height: 40px; color: var(--text); font-weight: 600; font-size: 16px; line-height: 24px; text-decoration: none; }
+    .foot-nav a:hover { color: var(--accent-hover); text-decoration: underline; }
+
+    @media (max-width: 1023px) {
+      .wrap { padding: 0 var(--space-6); }
+      .display { font-size: 36px; line-height: 40px; letter-spacing: -0.015em; }
+      .h2 { font-size: 24px; line-height: 30px; letter-spacing: 0; }
+      .h3 { font-size: 20px; line-height: 28px; }
+      .hero { grid-template-columns: minmax(0, 1fr); gap: var(--space-7); }
+      .grid4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      nav.top, .hide-m { display: none; }
+    }
+    @media (max-width: 599px) {
+      .bar > .cta { width: 100%; }
+    }
+    @media (max-width: 767px) {
+      .wrap { padding: 0 var(--space-4); }
+      body { font-size: 16px; line-height: 26px; }
+      .lead { font-size: 16px; line-height: 26px; }
+      .sec { padding-top: var(--space-7); }
+      .grid2, .grid4, .lessons { grid-template-columns: minmax(0, 1fr); gap: var(--space-5); }
+      .card { padding: var(--space-4); }
+      .demo { padding: var(--space-4); min-height: 0; }
+      .panel { padding: var(--space-5); }
+      .actions > a { width: 100%; }
+      details.module > summary { padding: var(--space-4); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .cta, .btn2, .chev { transition: none; }
+      .cta:hover, .cta:active { transform: none; }
+    }
+
+    /* Статті */
+    .crumbs { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; font-size: 16px; line-height: 24px; color: var(--text-muted); }
+    .crumbs a { font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; min-height: var(--tap-min); }
+    .crumbs a:hover { text-decoration: underline; }
+    .page-head { gap: var(--space-5); max-width: 880px; }
+    .title { font-family: var(--font-display); font-size: 48px; line-height: 56px; font-weight: 700; letter-spacing: -0.02em; margin: 0; overflow-wrap: break-word; hyphens: auto; }
+    .prose { max-width: var(--text-max); }
+    .prose > * + * { margin-top: var(--space-5); }
+    .prose h2 { font-family: var(--font-display); font-size: 28px; line-height: 36px; font-weight: 600; letter-spacing: -0.01em; margin: var(--space-7) 0 0; overflow-wrap: break-word; hyphens: auto; }
+    .prose h2 + * { margin-top: var(--space-4); }
+    .prose ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: var(--space-3); }
+    .prose ul li { position: relative; padding-left: var(--space-6); }
+    .prose ul li::before { content: ""; position: absolute; left: var(--space-2); top: 11px; width: 8px; height: 8px; border-radius: 2px; background: var(--accent); }
+    .prose strong { font-weight: 700; }
+    .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    .navlink[aria-current="page"] { color: var(--accent); box-shadow: inset 0 -3px 0 var(--accent); }
+    .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--surface-card); }
+    .prose table { width: 100%; border-collapse: collapse; font-size: 16px; line-height: 24px; }
+    .prose th, .prose td { text-align: left; vertical-align: top; padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--border); }
+    .prose thead th { background: var(--surface-muted); font-weight: 600; }
+    .prose tbody tr:last-child > * { border-bottom: 0; }
+    .prose tbody th { font-family: var(--font-mono); font-weight: 500; color: var(--accent-hover); white-space: nowrap; }
+    .sources { margin-top: var(--space-8); max-width: var(--text-max); background: var(--surface-muted); border-radius: var(--radius-lg); padding: var(--space-6); display: flex; flex-direction: column; gap: var(--space-4); }
+    .sources ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: var(--space-3); font-size: 16px; line-height: 24px; }
+    .sources a { overflow-wrap: anywhere; }
+    .pager { margin-top: var(--space-8); display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); max-width: 880px; }
+    .pager a, .acard { display: flex; flex-direction: column; gap: var(--space-2); text-decoration: none; color: var(--text); background: var(--surface-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: var(--space-5); transition: border-color 120ms ease-out, transform 120ms ease-out; }
+    .pager a:hover, .acard:hover { color: var(--text); border-color: var(--accent); transform: translateY(-2px); }
+    .pager a:hover .pt, .acard:hover .acard-title { color: var(--accent-hover); }
+    .pager .next { grid-column: 2; text-align: right; align-items: flex-end; }
+    .pt { font-family: var(--font-display); font-weight: 600; font-size: 18px; line-height: 26px; overflow-wrap: break-word; }
+    .alist { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-5); }
+    .alist li:first-child { grid-column: 1 / -1; }
+    .acard { height: 100%; gap: var(--space-4); padding: var(--space-6); }
+    .acard-top { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
+    .acard-title { font-family: var(--font-display); font-size: 24px; line-height: 32px; font-weight: 600; margin: 0; overflow-wrap: break-word; hyphens: auto; }
+    .acard-more { margin-top: auto; display: inline-flex; align-items: center; gap: var(--space-2); font-weight: 600; color: var(--accent-hover); }
+    @media (max-width: 1023px) {
+      .title { font-size: 32px; line-height: 40px; letter-spacing: -0.015em; }
+      .prose h2 { font-size: 22px; line-height: 30px; }
+    }
+    @media (max-width: 767px) {
+      .prose h2 { margin-top: var(--space-6); }
+      .sources { padding: var(--space-5); margin-top: var(--space-7); }
+      .pager, .alist { grid-template-columns: minmax(0, 1fr); }
+      .pager .next { grid-column: auto; }
+      .acard { padding: var(--space-5); }
+      .acard-title { font-size: 20px; line-height: 28px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .pager a, .acard { transition: none; }
+      .pager a:hover, .acard:hover { transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#top">Перейти до змісту</a>
+
+  <header>
+    <div class="wrap bar">
+      <a class="brand" href="index.html">
+        <span class="brand-mark" aria-hidden="true">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 8 4 4-4 4"/><path d="M12 17h7"/></svg>
+        </span>
+        ШІ-студія
+      </a>
+      <nav class="top" aria-label="Розділи сайту">
+        <a class="navlink" href="index.html#about">Про курс</a>
+        <a class="navlink" href="index.html#program">Програма</a>
+        <a class="navlink" href="articles.html" aria-current="page">Статті</a>
+        <a class="navlink" href="index.html#museum">Організатор</a>
+        <a class="navlink" href="index.html#apply">Заявка</a>
+      </nav>
+      <div class="seg" role="group" aria-label="Тема">
+        <button type="button" data-set-theme="light" aria-pressed="false" aria-label="Світла тема" title="Світла тема">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+        </button>
+        <button type="button" data-set-theme="dark" aria-pressed="false" aria-label="Темна тема" title="Темна тема">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z"/></svg>
+        </button>
+      </div>
+      <a class="cta" href="index.html#apply">Залишити заявку</a>
+    </div>
+  </header>
+
+  <main id="top" tabindex="-1">
+    <article class="wrap sec">
+      <div class="stack page-head">
+        <nav class="crumbs" aria-label="Навігація">
+          <a href="articles.html"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>&nbsp;Усі статті</a>
+        </nav>
+        <div class="chips">
+          <span class="badge">Стаття 4 з 5</span>
+          <span class="chip">4 хв читання</span>
+          <span class="chip">Рівень: середній+</span>
+        </div>
+        <h1 class="title">Codex: від підказки одного рядка до AI-програміста</h1>
+        <p class="lead muted">Назва <strong>Codex</strong> у світі AI позначає дві різні системи компанії <strong>OpenAI</strong>. Перша, 2021 року, вміла дописувати рядки коду, як автодоповнення в телефоні дописує слова. Друга, 2025 року, — агент, який отримує завдання і сам його виконує, ніби помічник, що пише цілий твір. Різниця між ними добре показує, як AI перейшов від «підказок» до справжньої роботи.</p>
+      </div>
+
+      <div class="prose" style="margin-top: var(--space-7)">
+        <h2>Що таке код і навіщо тут AI</h2>
+        <p>Програма — це текст, написаний мовою, яку розуміє комп'ютер. Такий текст називають кодом. А оскільки сучасні моделі чудово працюють з текстом (про це була попередня стаття), логічно було навчити їх і мови програмування.</p>
+        <h2>Codex 2021 року: модель-підказувач</h2>
+        <p>OpenAI взяла модель GPT і донавчила її на великій кількості відкритого коду з сайту GitHub, де програмісти з усього світу зберігають свої проєкти. Так з'явився Codex.</p>
+        <p>29 червня 2021 року GitHub анонсував сервіс <strong>Copilot</strong>, що працював на спеціальній версії Codex. Програміст починає писати, а Copilot пропонує, як продовжити: рядок або цілу функцію. 21 червня 2022 року Copilot став платною підпискою.</p>
+        <p>Для програмістів це було ніби отримати напарника, який ніколи не втомлюється і пам'ятає мільйони прикладів коду. Але напарник часом помилявся: пропонував код, який виглядав правильно, але працював не так. Тому перевіряти підказки все одно мала людина.</p>
+        <h2>Іспит на 164 задачі</h2>
+        <p>7 липня 2021 року команда OpenAI опублікувала наукову статтю про Codex. Серед авторів були співзасновники компанії Грег Брокман та Ілля Суцкевер, а також Мира Мураті й Алек Редфорд. Щоб перевірити модель, вони створили тест <strong>HumanEval</strong> — 164 задачі з програмування, в яких треба написати невелику програму за описом.</p>
+        <p>Цифри, що вражають:</p>
+        <ul>
+          <li>Codex з 12 млрд параметрів розв'язав 28,8 % задач з першої спроби;</li>
+          <li>звичайна GPT-3 не розв'язала жодної (0 %);</li>
+          <li>якщо дати Codex 100 спроб на кожну задачу, частка розв'язаних зростала до 70,2 %.</li>
+        </ul>
+        <p>10 серпня 2021 року Брокман і керівник проєкту Войцех Заремба провели публічну демонстрацію покращеного Codex і відкрили до нього доступ для частини розробників.</p>
+        <p>Чому вимірювали саме так? У програмуванні відповідь легко перевірити автоматично: для кожної задачі є тести, які запускають програму й дивляться, чи вона дає правильний результат. Це як контрольна з математики, де вчитель знає всі відповіді заздалегідь.</p>
+        <h2>Несподіване «закриття»</h2>
+        <p>20 березня 2023 року OpenAI повідомила розробників, що через три дні, 23 березня, доступ до моделей Codex через її сервіс буде закрито. Компанія радила перейти на новіші моделі, бо загальні GPT уже програмували не гірше за спеціалізований Codex.</p>
+        <p>Тут джерела трохи розходяться. Сторінка OpenAI про застарілі моделі згадує, що одну з моделей Codex остаточно вимкнули лише 4 січня 2024 року. Найімовірніше, 2023 року закрили основний доступ, а залишки прибрали пізніше. Здавалося, історія Codex на цьому закінчилася. Сервіс Copilot при цьому не зник: GitHub просто перевів його на новіші моделі, і програмісти навіть не помітили заміни.</p>
+        <h2>Відродження: Codex-агент 2025 року</h2>
+        <p>Але назва повернулася, і вже з новим змістом.</p>
+        <ul>
+          <li><strong>16 квітня 2025 року</strong> — <strong>Codex CLI</strong>: відкрита програма для термінала (текстового вікна для команд), що працює просто на комп'ютері користувача.</li>
+          <li><strong>16 травня 2025 року</strong> — хмарний агент <strong>Codex</strong>. Його модель codex-1 — версія «міркувальної» моделі o3, спеціально навчена на реальних задачах програмування.</li>
+        </ul>
+        <p>Чим агент відрізняється від підказувача? Йому дають завдання, наприклад «виправ помилку у формі входу». Агент сам читає файли проєкту, вносить зміни, запускає перевірки й пропонує готовий результат. За даними OpenAI, одна задача зазвичай займає від 1 до 30 хвилин. Під час роботи доступ до інтернету вимкнений: так безпечніше, бо агент не може випадково завантажити щось шкідливе. З 3 червня 2025 року Codex став доступним і для передплатників ChatGPT Plus.</p>
+        <h2>Програмують не лише програмісти</h2>
+        <p>У 2026 році Codex швидко зростав. У лютому вийшли модель GPT-5.3-Codex і окремий застосунок для комп'ютера. У березні з'явився Codex Security — агент, що шукає слабкі місця в безпеці програм, а кількість користувачів перевищила 2 млн на тиждень. 2 червня 2026 року OpenAI повідомила, що Codex користуються понад 5 млн людей на тиждень, і приблизно кожен п'ятий з них — не програміст. Аналітики, дизайнери, вчителі просять агента написати невеликий інструмент для своєї роботи. А 9 липня 2026 року Codex об'єднали з десктопною версією ChatGPT.</p>
+        <p>Важливе застереження: усі ці цифри повідомила сама OpenAI, і незалежно їх ніхто не перевіряв. Крім того, вони змінювалися майже щомісяця.</p>
+        <h2>Чому це важливо</h2>
+        <p>За чотири роки AI пройшов шлях від «підкажу наступний рядок» до «зроблю завдання, поки ти займаєшся іншим». Це змінює саму ідею програмування: щоб створити простий інструмент, уже не обов'язково вміти писати код, але корисно розуміти, що саме ти просиш і як перевірити результат. Агент, як і чат-бот, може помилятися, тому відповідальність за програму все одно лежить на людині, яка її використовує.</p>
+        <p>Що відбувається з AI-асистентами зараз і чому компанії почали обмежувати доступ до своїх найсильніших моделей — у наступній, завершальній статті.</p>
+      </div>
+
+      <section class="sources" aria-labelledby="sources-title">
+        <h2 class="label" id="sources-title" style="margin: 0">Джерела</h2>
+        <ul>
+          <li><a href="https://arxiv.org/abs/2107.03374">Evaluating Large Language Models Trained on Code — arXiv</a></li>
+          <li><a href="https://en.wikipedia.org/wiki/GitHub_Copilot">GitHub Copilot — Wikipedia</a></li>
+          <li><a href="https://techcrunch.com/2021/08/10/openai-upgrades-its-natural-language-ai-coder-codex-and-kicks-off-private-beta/">OpenAI upgrades its natural language AI coder Codex — TechCrunch</a></li>
+          <li><a href="https://platform.openai.com/docs/deprecations">Deprecations — OpenAI</a></li>
+          <li><a href="https://benchlm.ai/blog/posts/openai-codex-deprecation">OpenAI Codex Deprecation — benchlm.ai</a></li>
+          <li><a href="https://openai.com/index/introducing-codex/">Introducing Codex — OpenAI</a></li>
+          <li><a href="https://en.wikipedia.org/wiki/OpenAI_Codex_(AI_agent">OpenAI Codex (AI agent) — Wikipedia</a>)</li>
+          <li><a href="https://www.constellationr.com/insights/news/openai-touts-broadening-codex-usage-5-million-weekly-active-users">OpenAI touts broadening Codex usage with 5 million weekly active users — Constellation Research</a></li>
+        </ul>
+      </section>
+
+      <nav class="pager" aria-label="Інші статті серії">
+        <a class="prev" href="article-3-inside.html"><span class="caption muted" style="display:inline-flex;gap:var(--space-2);align-items:center"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Попередня стаття</span><span class="pt">Що всередині: трансформер, параметри і «виховання» моделі</span></a>
+<a class="next" href="article-5-2026.html"><span class="caption muted" style="display:inline-flex;gap:var(--space-2);align-items:center">Наступна стаття<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span><span class="pt">2026 рік: GPT-6, Gemini 4 і як читати гучні цифри</span></a>
+      </nav>
+    </article>
+  </main>
+
+  <footer>
+    <div class="wrap foot">
+      <div class="stack" style="gap: var(--space-3); max-width: 420px">
+        <span style="font-family: var(--font-display); font-weight: 700; font-size: 20px">ШІ-студія</span>
+        <p class="muted" style="font-size: 16px; line-height: 26px">Гурток про ChatGPT, Codex і Gemini для підлітків 14–18 років.</p>
+      </div>
+      <nav class="foot-nav" aria-label="Розділи сайту (футер)">
+        <a href="index.html#about">Про курс</a>
+        <a href="index.html#program">Програма</a>
+        <a href="articles.html">Статті</a>
+        <a href="index.html#museum">Організатор</a>
+        <a href="index.html#apply">Заявка</a>
+      </nav>
+      <p class="caption muted" style="align-self: flex-end">Організатор — Software and Computer Museum</p>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      var root = document.documentElement;
+      var buttons = document.querySelectorAll('[data-set-theme]');
+      var media = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+      function current() {
+        var t = root.getAttribute('data-theme');
+        if (t) return t;
+        return media && media.matches ? 'dark' : 'light';
+      }
+      function sync() {
+        var t = current();
+        buttons.forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-set-theme') === t)); });
+      }
+      buttons.forEach(function (b) {
+        b.addEventListener('click', function () {
+          var t = b.getAttribute('data-set-theme');
+          root.setAttribute('data-theme', t);
+          try { localStorage.setItem('theme', t); } catch (e) {}
+          sync();
+        });
+      });
+      if (media && media.addEventListener) media.addEventListener('change', sync);
+      sync();
+    })();
+  </script>
+</body>
+</html>
