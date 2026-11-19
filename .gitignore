@@ -1,0 +1,44 @@
+# Секрети й локальні налаштування
+.env
+.env.*
+!.env.example
+wp-config.php
+*.pem
+*.key
+*.p12
+*.pfx
+auth.json
+.claude/settings.local.json
+
+# Дампи баз даних і бекапи
+*.sql
+*.sql.gz
+*.bak
+*.backup
+
+# WordPress: завантаження й кеш
+wp-content/uploads/
+wp-content/cache/
+wp-content/upgrade/
+.wp-env.override.json
+
+# Залежності й збірка
+node_modules/
+vendor/
+dist/
+build/
+
+# Логи
+*.log
+npm-debug.log*
+debug.log
+
+# Тимчасові файли Office
+~$*
+
+# Системні файли та редактори
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
