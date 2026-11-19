@@ -50,6 +50,6 @@ ChatGPT не був першим AI і навіть не першим чат-б�
 
 - [ChatGPT — Wikipedia](https://en.wikipedia.org/wiki/ChatGPT)
 - [ChatGPT reportedly reached 100 million users in January — Engadget](https://www.engadget.com/chatgpt-100-million-users-january-130619073.html)
-- [How ChatGPT Managed to Grow Faster Than TikTok or Instagram — Time](https://time.com/6253615/chatgpt-fastest-growing/)
+- [How ChatGPT Managed to Grow Faster Than TikTok or Instagram — Time](https://web.archive.org/web/20250412125828/https://time.com/6253615/chatgpt-fastest-growing/)
 - [OpenAI's ChatGPT now has 100 million weekly active users — TechCrunch](https://techcrunch.com/2023/11/06/Openais-Chatgpt-Now-Has-100-Million-Weekly-Active-Users)
 - [Spring Update (GPT-4o) — OpenAI](https://openai.com/index/spring-update/)
